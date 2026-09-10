@@ -58,15 +58,30 @@ export function App() {
    * the player can always see where they are.
    *
    * The strip is scrolled directly rather than through `scrollIntoView`, which
-   * would also scroll the page vertically as a side effect.
+   * would also scroll the page vertically as a side effect. Centring is redone
+   * once the web font has loaded and whenever the window resizes, because both
+   * change the tab widths this calculation depends on.
    */
   useEffect(() => {
-    const strip = tabStripRef.current
-    const activeTab = tabRefs.current[TABS.indexOf(tab)]
-    if (!strip || !activeTab) return
+    const centreActiveTab = (behavior: ScrollBehavior) => {
+      const strip = tabStripRef.current
+      const activeTab = tabRefs.current[TABS.indexOf(tab)]
+      if (!strip || !activeTab) return
 
-    const centred = activeTab.offsetLeft - (strip.clientWidth - activeTab.clientWidth) / 2
-    strip.scrollTo({ left: Math.max(0, centred), behavior: 'smooth' })
+      const centred = activeTab.offsetLeft - (strip.clientWidth - activeTab.clientWidth) / 2
+      strip.scrollTo({ left: Math.max(0, centred), behavior })
+    }
+
+    centreActiveTab('smooth')
+
+    // Font swap reflows the strip after this effect has already run.
+    void document.fonts?.ready.then(() => centreActiveTab('auto'))
+
+    const onResize = () => centreActiveTab('auto')
+    window.addEventListener('resize', onResize)
+    return () => {
+      window.removeEventListener('resize', onResize)
+    }
   }, [tab])
 
   /**

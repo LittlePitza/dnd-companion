@@ -140,6 +140,15 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   scrollbar-width: none;
+  /* Fades the trailing edge so it is visible that the strip scrolls. */
+  mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 1.5rem), transparent 100%);
+}
+
+/* Once every tab fits there is nothing to scroll, so drop the fade. */
+@media (min-width: 40rem) {
+  .tabs {
+    mask-image: none;
+  }
 }
 
 .tabs::-webkit-scrollbar {
