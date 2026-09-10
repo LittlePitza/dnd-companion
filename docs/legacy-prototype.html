@@ -1,0 +1,906 @@
+<!-- Soryn Vort — Consola de juego -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..600;1,6..72,300..500&family=Martian+Mono:wght@300;500;700&display=swap');
+
+.sv *, .sv *::before, .sv *::after { box-sizing: border-box; }
+
+.sv {
+  --void:#15111B; --pit:#0F0C14; --panel:#1E1825; --panel2:#271F30;
+  --line:#372E45; --line2:#2A2333;
+  --bone:#EFE8DE; --dim:#A99CB8; --dim2:#736786;
+  --ember:#C8471F; --sulf:#EFAB44; --surge:#A377DD; --verd:#4FB8A4; --blood:#8C2F39;
+  --disp:'Fraunces','Bodoni Moda',Georgia,serif;
+  --read:'Newsreader',Georgia,serif;
+  --mono:'Martian Mono',ui-monospace,monospace;
+  background:var(--void); color:var(--bone); font-family:var(--read);
+  font-size:16px; font-weight:300; line-height:1.6;
+  position:relative; overflow:hidden; isolation:isolate;
+}
+.sv::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(85% 45% at 82% -6%,rgba(163,119,221,.15),transparent 60%),
+             radial-gradient(65% 40% at 6% 2%,rgba(200,71,31,.12),transparent 58%),
+             repeating-linear-gradient(0deg,rgba(255,255,255,.013) 0 1px,transparent 1px 3px);}
+.sv > *{position:relative;z-index:1;}
+.sv.surging::after{content:"";position:fixed;inset:0;z-index:95;pointer-events:none;
+  background:radial-gradient(60% 60% at 50% 42%,rgba(163,119,221,.6),rgba(163,119,221,0) 70%);
+  animation:flash .9s ease-out forwards;}
+@keyframes flash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+.sv h1,.sv h2,.sv h3,.sv h4,.sv p,.sv ul,.sv ol{margin:0;}
+.sv strong{font-weight:600;color:#fff;}
+
+/* ---------- header ---------- */
+.hd{padding:26px 20px 18px;border-bottom:1px solid var(--line);}
+.hd .kick{font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--dim2);}
+.hd h1{font-family:var(--disp);font-variation-settings:'opsz'144,'SOFT'0,'WONK'1;
+  font-weight:900;font-size:clamp(38px,10vw,62px);line-height:.88;letter-spacing:-.035em;margin-top:10px;
+  background:linear-gradient(160deg,var(--bone) 35%,#CBB4E4 80%,var(--surge));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.hd .sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);margin-top:12px;}
+
+/* ---------- vitals strip ---------- */
+.vit{position:sticky;top:0;z-index:50;background:rgba(15,12,20,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:0;}
+.vit .cell{padding:9px 13px;border-right:1px solid var(--line2);font-family:var(--mono);
+  font-size:10px;letter-spacing:.08em;color:var(--dim2);white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.vit .cell b{color:var(--bone);font-weight:700;font-size:12px;}
+.vit .cell.hurt b{color:var(--sulf);} .vit .cell.crit b{color:var(--ember);}
+.vit .turnst{margin-left:auto;border-right:0;}
+.dot{width:8px;height:8px;border:1px solid var(--dim2);transform:rotate(45deg);display:inline-block;}
+.dot.used{background:var(--ember);border-color:var(--ember);}
+
+/* ---------- tabs ---------- */
+.tabs{position:sticky;top:37px;z-index:49;display:flex;background:rgba(15,12,20,.96);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.tabs button{flex:1;appearance:none;background:none;border:0;cursor:pointer;
+  font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);padding:13px 6px;border-bottom:2px solid transparent;transition:color .16s,border-color .16s;}
+.tabs button:hover{color:var(--bone);}
+.tabs button[aria-current="true"]{color:var(--bone);border-bottom-color:var(--ember);}
+.tabs button:focus-visible{outline:2px solid var(--surge);outline-offset:-3px;}
+
+/* ---------- views ---------- */
+.view{display:none;padding:22px 20px 70px;}
+.view.on{display:block;animation:in .3s cubic-bezier(.2,.7,.3,1) both;}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec{margin-bottom:34px;}
+.sec>h2{font-family:var(--disp);font-variation-settings:'opsz'90,'WONK'1;font-weight:700;
+  font-size:24px;letter-spacing:-.02em;line-height:1.1;margin-bottom:4px;}
+.eyeb{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--dim2);margin:24px 0 11px;display:flex;align-items:center;gap:11px;}
+.eyeb::after{content:"";flex:1;height:1px;background:var(--line2);}
+.lede{color:var(--dim);font-size:14.5px;margin-bottom:16px;}
+
+.card{border:1px solid var(--line);background:var(--panel);padding:15px 16px;margin-bottom:10px;}
+.card h4{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim2);margin-bottom:9px;}
+.grid{display:grid;gap:10px;}
+.g2{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));}
+.g3{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+
+/* ---------- buttons ---------- */
+.btn{appearance:none;cursor:pointer;background:transparent;border:1px solid var(--line);
+  color:var(--dim);font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;padding:9px 13px;transition:border-color .15s,color .15s,background .15s;}
+.btn:hover{border-color:var(--bone);color:var(--bone);}
+.btn:focus-visible{outline:2px solid var(--surge);outline-offset:2px;}
+.btn:disabled{opacity:.3;cursor:not-allowed;}
+.btn.hot{border-color:rgba(200,71,31,.55);color:var(--sulf);}
+.btn.hot:hover{background:rgba(200,71,31,.16);border-color:var(--ember);}
+.btn.chaos{border-color:rgba(163,119,221,.55);color:var(--surge);}
+.btn.chaos:hover{background:rgba(163,119,221,.16);}
+.btn.chaos[aria-pressed="true"]{background:var(--surge);color:var(--pit);border-color:var(--surge);}
+.btn.solid{background:var(--bone);color:var(--pit);border-color:var(--bone);font-weight:700;}
+.btn.solid:hover{background:#fff;}
+.row{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* ---------- pips ---------- */
+.pips{display:flex;flex-wrap:wrap;gap:6px;}
+.pip{appearance:none;cursor:pointer;padding:0;width:27px;height:27px;border:1px solid var(--line);
+  background:transparent;transform:rotate(45deg);transition:background .15s,border-color .15s,opacity .15s;}
+.pip.full{background:var(--tone,var(--bone));border-color:var(--tone,var(--bone));}
+.pip.spent{opacity:.28;}
+.pip:hover{border-color:var(--bone);}
+.pip:focus-visible{outline:2px solid var(--surge);outline-offset:3px;}
+.modh{display:flex;justify-content:space-between;align-items:baseline;gap:9px;margin-bottom:11px;}
+.modh h4{margin:0;}
+.modh .of{font-family:var(--mono);font-size:9.5px;color:var(--dim2);}
+
+/* ---------- hp ---------- */
+.hp{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+.hp .n{font-family:var(--disp);font-variation-settings:'opsz'144,'WONK'1;font-weight:900;
+  font-size:46px;line-height:1;letter-spacing:-.03em;min-width:2.2ch;text-align:right;}
+.hp .of{font-family:var(--mono);font-size:10px;color:var(--dim2);}
+
+/* ---------- planner ---------- */
+.plan{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));}
+.sit{appearance:none;cursor:pointer;text-align:left;background:var(--panel);border:1px solid var(--line);
+  color:var(--bone);padding:13px 14px;font-family:var(--read);font-size:14px;font-weight:300;
+  transition:border-color .15s,background .15s;line-height:1.35;}
+.sit:hover{border-color:var(--sulf);background:var(--panel2);}
+.sit[aria-pressed="true"]{border-color:var(--sulf);background:rgba(239,171,68,.11);}
+.sit:focus-visible{outline:2px solid var(--surge);outline-offset:2px;}
+.sit .t{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);display:block;margin-bottom:5px;}
+.answer{border:1px solid var(--sulf);background:rgba(239,171,68,.07);padding:17px 18px;margin-top:12px;}
+.answer h3{font-family:var(--disp);font-variation-settings:'opsz'60,'WONK'1;font-weight:600;
+  font-size:20px;margin-bottom:11px;}
+.seq{display:grid;grid-template-columns:auto 1fr;gap:7px 13px;align-items:baseline;margin-bottom:11px;}
+.seq dt{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sulf);white-space:nowrap;padding-top:3px;}
+.seq dd{margin:0;font-size:14.5px;}
+.cost{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--verd);
+  border:1px solid rgba(79,184,164,.4);padding:3px 8px;display:inline-block;}
+
+/* ---------- spell cards ---------- */
+.sp{border:1px solid var(--line);background:var(--panel);margin-bottom:8px;}
+.sp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;gap:11px;
+  transition:background .15s;}
+.sp>summary::-webkit-details-marker{display:none;}
+.sp>summary:hover{background:var(--panel2);}
+.sp .lvl{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--verd);
+  border:1px solid var(--line);padding:3px 6px;min-width:30px;text-align:center;flex:none;}
+.sp .lvl.c{color:var(--dim2);}
+.sp .nm{flex:1;font-size:15.5px;line-height:1.25;}
+.sp .nm i{display:block;font-style:italic;font-size:11.5px;color:var(--dim2);}
+.sp .qk{font-family:var(--mono);font-size:9.5px;color:var(--dim);white-space:nowrap;text-align:right;}
+.sp[open]>summary{background:var(--panel2);border-bottom:1px solid var(--line);}
+.spb{padding:15px;}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:9px;margin-bottom:13px;}
+.stat div{border:1px solid var(--line2);padding:7px 9px;}
+.stat .k{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);}
+.stat .v{font-family:var(--mono);font-size:12px;color:var(--bone);margin-top:3px;}
+.spb .use{border-left:2px solid var(--verd);background:rgba(79,184,164,.07);padding:10px 13px;
+  font-size:14px;color:var(--dim);margin-bottom:12px;}
+.spb .use b{color:var(--verd);}
+.spb .warn{border-left:2px solid var(--ember);background:rgba(200,71,31,.1);padding:10px 13px;
+  font-size:14px;color:var(--dim);margin-bottom:12px;}
+.spb .warn b{color:var(--sulf);}
+.feat{border-left:2px solid var(--dim2);}
+
+/* ---------- rolls ---------- */
+.out{border:1px solid var(--line);background:var(--pit);padding:13px 15px;margin-top:11px;
+  font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.8;}
+.out b{color:var(--bone);font-weight:700;}
+.out .big{font-family:var(--disp);font-variation-settings:'opsz'144,'WONK'1;font-weight:900;
+  font-size:30px;color:var(--sulf);line-height:1;}
+.out .crit{color:var(--verd);} .out .fail{color:var(--ember);}
+.out:empty{display:none;}
+
+/* ---------- surge ---------- */
+.surgebox{border-color:rgba(163,119,221,.35);background:linear-gradient(150deg,var(--panel2),var(--panel) 62%);}
+.dierow{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;}
+.die{appearance:none;cursor:pointer;padding:0;width:104px;height:104px;background:transparent;border:0;
+  display:grid;place-items:center;position:relative;flex:none;}
+.die svg{position:absolute;inset:0;width:100%;height:100%;}
+.die .face{font-family:var(--disp);font-variation-settings:'opsz'144,'WONK'1;font-weight:900;
+  font-size:36px;color:var(--bone);position:relative;z-index:2;}
+.poly{fill:rgba(163,119,221,.07);stroke:var(--line);stroke-width:2;transition:stroke .2s;}
+.die:hover .poly,.die.rolling .poly{stroke:var(--surge);}
+.die.hit .poly{fill:rgba(163,119,221,.32);stroke:var(--surge);}
+.die.hit .face{color:var(--surge);}
+.die:focus-visible{outline:2px solid var(--surge);outline-offset:4px;}
+.dieinfo{flex:1;min-width:190px;}
+.dieinfo .vd{font-family:var(--disp);font-variation-settings:'opsz'90,'WONK'1;font-weight:700;
+  font-size:21px;line-height:1.15;margin-bottom:6px;}
+.dieinfo .vd.hit{color:var(--surge);}
+.dieinfo p{font-size:14px;color:var(--dim);}
+.d100{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--surge);
+  border:1px solid rgba(163,119,221,.45);padding:8px 11px;display:block;margin-top:11px;}
+
+/* ---------- skills ---------- */
+.sk{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:6px;}
+.sk button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--line);
+  color:var(--dim);display:flex;justify-content:space-between;align-items:center;gap:9px;
+  padding:9px 12px;font-family:var(--read);font-size:13.5px;transition:border-color .15s,color .15s;}
+.sk button:hover{border-color:var(--bone);color:var(--bone);}
+.sk button b{font-family:var(--mono);font-size:12px;font-weight:700;}
+.sk button.p{color:var(--bone);} .sk button.p b{color:var(--verd);}
+.sk button:focus-visible{outline:2px solid var(--surge);outline-offset:2px;}
+
+/* ---------- notes ---------- */
+.nform{display:grid;gap:8px;margin-bottom:16px;}
+.sv input[type=text],.sv textarea,.sv select{width:100%;background:var(--pit);border:1px solid var(--line);
+  color:var(--bone);font-family:var(--read);font-size:15px;padding:11px 13px;border-radius:0;}
+.sv textarea{min-height:88px;resize:vertical;line-height:1.55;}
+.sv input:focus,.sv textarea:focus,.sv select:focus{outline:none;border-color:var(--surge);}
+.sv input::placeholder,.sv textarea::placeholder{color:var(--dim2);}
+.note{border:1px solid var(--line);background:var(--panel);padding:13px 15px;margin-bottom:8px;}
+.note .nh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;}
+.note .nt{font-family:var(--disp);font-variation-settings:'opsz'60,'WONK'1;font-weight:600;font-size:17px;flex:1;}
+.note .nd{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--dim2);white-space:nowrap;}
+.note .nb{font-size:14.5px;color:var(--dim);white-space:pre-wrap;}
+.note .tag{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);padding:2px 7px;color:var(--dim2);display:inline-block;margin-top:9px;}
+.note .tag.oleada{color:var(--surge);border-color:rgba(163,119,221,.45);}
+.note .tag.pnj{color:var(--verd);border-color:rgba(79,184,164,.4);}
+.note .tag.pista{color:var(--sulf);border-color:rgba(239,171,68,.4);}
+.note .del{appearance:none;background:none;border:0;color:var(--dim2);cursor:pointer;
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:2px 4px;}
+.note .del:hover{color:var(--ember);}
+.empty{color:var(--dim2);font-style:italic;font-size:14.5px;padding:20px 0;}
+
+.foot{padding:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:8.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--dim2);text-align:center;}
+
+@media (prefers-reduced-motion:reduce){.sv *,.sv *::before,.sv *::after{animation:none!important;transition:none!important;}}
+</style>
+
+<div class="sv" id="sv">
+  <header class="hd">
+    <div class="kick">Consola de juego</div>
+    <h1>Soryn Vort</h1>
+    <div class="sub">Hechicero de Magia Salvaje 5 · Humano · Charlatán · CD 14 · Atq +6</div>
+  </header>
+
+  <div class="vit" id="vit"></div>
+
+  <nav class="tabs">
+    <button type="button" data-go="combate" aria-current="true">Combate</button>
+    <button type="button" data-go="conjuros">Conjuros</button>
+    <button type="button" data-go="hoja">Hoja</button>
+    <button type="button" data-go="notas">Notas</button>
+  </nav>
+
+  <!-- ============ COMBATE ============ -->
+  <section class="view on" id="v-combate">
+
+    <div class="sec">
+      <h2>¿Qué hago este turno?</h2>
+      <p class="lede">Toca tu situación y te digo la secuencia exacta.</p>
+      <div class="plan" id="plan"></div>
+      <div id="answer"></div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Estado del turno</div>
+      <div class="card">
+        <p style="font-size:14px;color:var(--dim);margin-bottom:12px" id="turnmsg">Turno limpio. Puedes hacerlo todo.</p>
+        <div class="row">
+          <button class="btn solid" type="button" id="endturn">Terminar turno</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Recursos</div>
+
+      <div class="card">
+        <div class="modh"><h4>Puntos de golpe</h4><span class="of">Dados 5d6</span></div>
+        <div class="hp">
+          <span class="n" id="hpn">32</span><span class="of">/ 32</span>
+          <div class="row" style="margin-left:auto">
+            <button class="btn" type="button" data-hp="-5">−5</button>
+            <button class="btn" type="button" data-hp="-1">−1</button>
+            <button class="btn" type="button" data-hp="1">+1</button>
+            <button class="btn" type="button" data-hp="5">+5</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card"><div class="modh"><h4>Espacios nivel 1</h4><span class="of" id="s1-of"></span></div><div class="pips" id="s1" style="--tone:var(--bone)"></div><p style="font-size:12.5px;color:var(--dim2);margin-top:9px">Reserva uno para Escudo.</p></div>
+        <div class="card"><div class="modh"><h4>Espacios nivel 2</h4><span class="of" id="s2-of"></span></div><div class="pips" id="s2" style="--tone:var(--bone)"></div></div>
+        <div class="card"><div class="modh"><h4>Espacios nivel 3</h4><span class="of" id="s3-of"></span></div><div class="pips" id="s3" style="--tone:var(--sulf)"></div></div>
+        <div class="card"><div class="modh"><h4>Puntos de hechicería</h4><span class="of" id="sp-of"></span></div><div class="pips" id="sp" style="--tone:var(--verd)"></div>
+          <div class="row" style="margin-top:11px"><button class="btn" type="button" id="short">Descanso corto · +2</button></div></div>
+        <div class="card"><div class="modh"><h4>Hechicería Innata</h4><span class="of" id="in-of"></span></div><div class="pips" id="in" style="--tone:var(--surge)"></div>
+          <p style="font-size:12.5px;color:var(--dim2);margin-top:9px">Acción adicional · 1 min · CD 15 y ventaja.</p></div>
+        <div class="card"><div class="modh"><h4>Inspiración Heroica</h4><span class="of" id="hi-of"></span></div><div class="pips" id="hi" style="--tone:var(--sulf)"></div>
+          <p style="font-size:12.5px;color:var(--dim2);margin-top:9px">Repite cualquier d20. Se renueva cada descanso largo.</p></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Magia salvaje</div>
+      <div class="card surgebox">
+        <div class="dierow">
+          <button class="die" type="button" id="die" aria-label="Tirar el d20 de oleada">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="poly" points="50,5 93,30 93,74 50,97 7,74 7,30"/></svg>
+            <span class="face" id="face">20</span>
+          </button>
+          <div class="dieinfo">
+            <div class="vd" id="vd">Tira el dado.</div>
+            <p id="vp">Solo después de gastar un espacio, una vez por turno. Únicamente un <strong>20 natural</strong> desata la oleada.</p>
+            <div class="d100" id="d100" hidden></div>
+            <div class="row" style="margin-top:12px">
+              <button class="btn chaos" type="button" id="tides" aria-pressed="false">Mareas de Caos</button>
+              <button class="btn hot" type="button" id="long">Descanso largo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Dados sueltos</div>
+      <div class="card">
+        <div class="row">
+          <button class="btn" type="button" data-atk="normal">Ataque +6</button>
+          <button class="btn chaos" type="button" data-atk="adv">Ataque con ventaja</button>
+          <button class="btn" type="button" data-atk="dis">Ataque con desventaja</button>
+          <button class="btn" type="button" data-init="1">Iniciativa +1</button>
+        </div>
+        <div class="out" id="rollout"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONJUROS ============ -->
+  <section class="view" id="v-conjuros">
+    <div class="sec">
+      <h2>Conjuros</h2>
+      <p class="lede">Toca uno para abrirlo. El botón de lanzar gasta el espacio de verdad y avisa si el turno no lo permite.</p>
+      <div id="spells"></div>
+    </div>
+  </section>
+
+  <!-- ============ HOJA ============ -->
+  <section class="view" id="v-hoja">
+    <div class="sec">
+      <h2>Hoja</h2>
+      <div class="grid g3" style="margin-bottom:6px">
+        <div class="card"><h4>Clase de armadura</h4><div style="font-family:var(--disp);font-variation-settings:'WONK' 1;font-weight:900;font-size:30px">14</div><p style="font-size:12.5px;color:var(--dim2)">Con Armadura de Mago. Sin ella, 11.</p></div>
+        <div class="card"><h4>CD de conjuros</h4><div style="font-family:var(--disp);font-variation-settings:'WONK' 1;font-weight:900;font-size:30px">14</div><p style="font-size:12.5px;color:var(--dim2)">15 con Hechicería Innata.</p></div>
+        <div class="card"><h4>Ataque de conjuros</h4><div style="font-family:var(--disp);font-variation-settings:'WONK' 1;font-weight:900;font-size:30px">+6</div><p style="font-size:12.5px;color:var(--dim2)">Ignora cobertura media y de 3/4.</p></div>
+        <div class="card"><h4>Velocidad</h4><div style="font-family:var(--disp);font-variation-settings:'WONK' 1;font-weight:900;font-size:30px">30</div><p style="font-size:12.5px;color:var(--dim2)">Pies. Iniciativa +1.</p></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Habilidades · toca para tirar</div>
+      <div class="sk" id="skills"></div>
+      <div class="out" id="skout"></div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Características</div>
+      <div class="grid g3" id="abils"></div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Rasgos y dotes</div>
+      <div id="feats"></div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Equipo e idiomas</div>
+      <div class="card"><h4>Oficio de charlatán</h4><p style="font-size:14px;color:var(--dim)">Kit de falsificación · disfraz · ropa fina. Con Engaño +6, este es tu verdadero arsenal.</p></div>
+      <div class="card"><h4>Control sin magia</h4><p style="font-size:14px;color:var(--dim)">20 abrojos · 2 frascos de aceite. Frenan persecuciones y crean fuego sin gastar espacios.</p></div>
+      <div class="card"><h4>Exploración</h4><p style="font-size:14px;color:var(--dim)">2 dagas · lanza · cristal (foco arcano) · mochila · cuerda · yesquero · 10 antorchas · odre · palanca · 10 raciones · 43 PO.</p></div>
+      <div class="card"><h4>Idiomas</h4><p style="font-size:14px;color:var(--dim)">Común · Lengua de Signos Común · Élfico</p></div>
+    </div>
+
+    <div class="sec">
+      <div class="eyeb">Quién es</div>
+      <div class="card"><p style="font-size:14.5px;color:var(--dim)">Caótico Neutral. Soryn no miente por maldad: miente porque la verdad es aburrida y porque nunca ha confiado en que las reglas jueguen a su favor. La magia salvaje le encaja perfecto — improvisa, y después finge que todo salió según lo planeado.</p></div>
+      <div class="card"><h4>Rasgo</h4><p style="font-size:14px;color:var(--dim)">Nunca doy mi nombre real dos veces seguidas.</p></div>
+      <div class="card"><h4>Ideal</h4><p style="font-size:14px;color:var(--dim)">Libertad. Las cadenas — leyes, contratos, promesas — son para otros.</p></div>
+      <div class="card"><h4>Vínculo</h4><p style="font-size:14px;color:var(--dim)">Le debo dinero a alguien peligroso, y algún día me va a alcanzar.</p></div>
+      <div class="card"><h4>Defecto</h4><p style="font-size:14px;color:var(--dim)">Cuando algo sale mal, mi primer instinto es mentir en vez de arreglarlo.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ NOTAS ============ -->
+  <section class="view" id="v-notas">
+    <div class="sec">
+      <h2>Recuerdos</h2>
+      <p class="lede">Se guardan de verdad. Siguen aquí la próxima sesión.</p>
+      <div class="nform">
+        <input type="text" id="ntitle" placeholder="Título — un nombre, un lugar, una promesa" maxlength="90">
+        <textarea id="nbody" placeholder="Qué pasó, qué te deben, a quién estafaste…"></textarea>
+        <div class="row">
+          <select id="ntag" style="flex:1;min-width:130px">
+            <option value="sesion">Sesión</option>
+            <option value="pnj">PNJ</option>
+            <option value="pista">Pista</option>
+            <option value="deuda">Deuda</option>
+            <option value="oleada">Oleada</option>
+          </select>
+          <button class="btn solid" type="button" id="nadd">Guardar</button>
+        </div>
+      </div>
+      <div id="nstatus" style="font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--dim2);margin-bottom:14px"></div>
+      <div id="notes"></div>
+    </div>
+  </section>
+
+  <div class="foot">Soryn Vort · D&amp;D 2024</div>
+</div>
+
+<script>
+(function(){
+var R=document.getElementById('sv');
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $=function(s){return R.querySelector(s);};
+
+/* ================= DICE ================= */
+function d(n){return Math.floor(Math.random()*n)+1;}
+function roll(str){ // "2d10" -> {rolls:[..],sum}
+  var m=/^(\d+)d(\d+)$/.exec(str); if(!m)return{rolls:[],sum:0};
+  var out=[],t=0; for(var i=0;i<+m[1];i++){var r=d(+m[2]);out.push(r);t+=r;}
+  return {rolls:out,sum:t};
+}
+
+/* ================= STATE ================= */
+var MAXHP=32, hp=32;
+var turn={slot:false,bonus:false,action:false,quick:false,surge:false};
+var armed=false;
+
+/* ================= PIP BANKS ================= */
+var B={};
+function bank(id,max){
+  var host=$('#'+id), st=new Array(max).fill(true);
+  host.innerHTML='';
+  for(var i=0;i<max;i++)(function(i){
+    var p=document.createElement('button');
+    p.type='button'; p.className='pip full';
+    p.addEventListener('click',function(){
+      st[i]=!st[i];
+      p.classList.toggle('full',st[i]); p.classList.toggle('spent',!st[i]);
+      sync();
+    });
+    host.appendChild(p);
+  })(i);
+  function sync(){
+    var left=st.filter(Boolean).length; B[id].left=left;
+    var of=$('#'+id+'-of'); if(of)of.textContent=left+' / '+max;
+    Array.prototype.forEach.call(host.children,function(el,i){
+      el.setAttribute('aria-label','Uso '+(i+1)+(st[i]?' disponible':' gastado'));
+    });
+    vitals();
+  }
+  B[id]={left:max,max:max,
+    spend:function(n){n=n||1;var ok=0;
+      for(var i=0;i<max&&ok<n;i++){if(st[i]){st[i]=false;host.children[i].classList.remove('full');host.children[i].classList.add('spent');ok++;}}
+      sync(); return ok===n;},
+    add:function(n){for(var i=0;i<max&&n>0;i++){if(!st[i]){st[i]=true;host.children[i].classList.add('full');host.children[i].classList.remove('spent');n--;}}sync();},
+    fill:function(){for(var i=0;i<max;i++)st[i]=true;
+      Array.prototype.forEach.call(host.children,function(el){el.classList.add('full');el.classList.remove('spent');});sync();}};
+  sync();
+}
+bank('s1',4); bank('s2',3); bank('s3',2); bank('sp',5); bank('in',2); bank('hi',1);
+
+/* ================= VITALS STRIP ================= */
+function vitals(){
+  var cls = hp===0?'crit':(hp<=10?'hurt':'');
+  $('#vit').innerHTML =
+    '<span class="cell '+cls+'">PG <b>'+hp+'</b>/32</span>'+
+    '<span class="cell">Esp <b>'+B.s1.left+'·'+B.s2.left+'·'+B.s3.left+'</b></span>'+
+    '<span class="cell">PH <b>'+B.sp.left+'</b></span>'+
+    '<span class="cell">Innata <b>'+B['in'].left+'</b></span>'+
+    '<span class="cell turnst">Turno '+
+      '<span class="dot'+(turn.action?' used':'')+'" title="acción"></span>'+
+      '<span class="dot'+(turn.bonus?' used':'')+'" title="acción adicional"></span>'+
+      '<span class="dot'+(turn.slot?' used':'')+'" title="espacio"></span></span>';
+  var m=[];
+  if(turn.action)m.push('acción usada');
+  if(turn.bonus)m.push('acción adicional usada');
+  if(turn.slot)m.push('espacio gastado');
+  if(turn.quick)m.push('aceleraste: ya no puedes lanzar nada de nivel 1+');
+  $('#turnmsg').textContent = m.length? 'Este turno: '+m.join(' · ')+'.' : 'Turno limpio. Puedes hacerlo todo.';
+}
+$('#endturn').addEventListener('click',function(){
+  turn={slot:false,bonus:false,action:false,quick:false,surge:false}; vitals();
+});
+
+/* ================= HP ================= */
+R.querySelectorAll('[data-hp]').forEach(function(b){
+  b.addEventListener('click',function(){
+    hp=Math.max(0,Math.min(MAXHP,hp+parseInt(b.dataset.hp,10)));
+    $('#hpn').textContent=hp;
+    $('#hpn').style.color = hp===0?'var(--ember)':(hp<=10?'var(--sulf)':'var(--bone)');
+    vitals();
+  });
+});
+
+/* ================= RESTS ================= */
+var shortBtn=$('#short');
+shortBtn.addEventListener('click',function(){
+  B.sp.add(2); shortBtn.disabled=true; shortBtn.textContent='Usado hasta descanso largo';
+});
+$('#long').addEventListener('click',function(){
+  ['s1','s2','s3','sp','in','hi'].forEach(function(k){B[k].fill();});
+  hp=MAXHP; $('#hpn').textContent=hp; $('#hpn').style.color='var(--bone)';
+  shortBtn.disabled=false; shortBtn.textContent='Descanso corto · +2';
+  armed=false; tides.setAttribute('aria-pressed','false'); tides.textContent='Mareas de Caos';
+  turn={slot:false,bonus:false,action:false,quick:false,surge:false};
+  $('#vd').textContent='Día nuevo.'; $('#vd').className='vd';
+  $('#vp').textContent='Todo restaurado.'; $('#d100').hidden=true; $('#die').className='die';
+  vitals();
+});
+
+/* ================= SURGE ================= */
+var die=$('#die'),face=$('#face'),vd=$('#vd'),vp=$('#vp'),d100=$('#d100'),tides=$('#tides'),busy=false;
+tides.addEventListener('click',function(){
+  armed=!armed;
+  tides.setAttribute('aria-pressed',armed);
+  tides.textContent=armed?'Caos armado':'Mareas de Caos';
+  if(armed){vd.textContent='Mareas de Caos activas.';vd.className='vd';
+    vp.innerHTML='Tienes ventaja en una prueba de d20. La siguiente tirada de oleada será <strong>automática</strong>.';
+    d100.hidden=true;}
+});
+function land(n){
+  var hit=armed||n===20;
+  face.textContent=armed?'★':n;
+  die.className='die'+(hit?' hit':'');
+  if(hit){
+    var pct=d(100);
+    vd.textContent='¡Oleada de magia salvaje!'; vd.className='vd hit';
+    vp.innerHTML=armed?'Mareas de Caos la garantizó. El uso queda consumido.':'Veinte natural. La magia se te salió de las manos.';
+    d100.innerHTML='1d100 → <b style="color:var(--bone)">'+pct+'</b> · búscalo en la tabla de Oleada, PHB 2024 pág. 149'+
+      '<br><button class="btn chaos" type="button" id="logsurge" style="margin-top:9px">Guardar en Recuerdos</button>';
+    d100.hidden=false;
+    var lg=$('#logsurge');
+    if(lg)lg.addEventListener('click',function(){
+      addNote('Oleada — resultado '+pct,'Salió '+pct+' en la tabla de oleada. Anota qué pasó.','oleada');
+      lg.textContent='Guardado'; lg.disabled=true;
+    });
+    if(!reduce){R.classList.add('surging');setTimeout(function(){R.classList.remove('surging');},900);}
+    if(armed){armed=false;tides.setAttribute('aria-pressed','false');tides.textContent='Mareas de Caos';}
+  }else{
+    vd.textContent='Sin oleada.'; vd.className='vd';
+    vp.textContent='Sacaste '+n+'. La magia se portó bien.';
+    d100.hidden=true;
+  }
+  busy=false;
+}
+die.addEventListener('click',function(){
+  if(busy)return; busy=true;
+  var n=d(20);
+  if(reduce){land(n);return;}
+  die.className='die rolling'; d100.hidden=true;
+  vd.textContent='Tirando…'; vd.className='vd'; vp.textContent='';
+  var t=0,sp=setInterval(function(){face.textContent=d(20);if(++t>11){clearInterval(sp);land(n);}},55);
+});
+
+/* ================= LOOSE DICE ================= */
+function showRoll(html){$('#rollout').innerHTML=html;}
+R.querySelectorAll('[data-atk]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var mode=b.dataset.atk,a=d(20),bb=d(20),use=a;
+    if(mode==='adv')use=Math.max(a,bb); if(mode==='dis')use=Math.min(a,bb);
+    var tot=use+6;
+    var tag=use===20?'<span class="crit">¡CRÍTICO!</span>':(use===1?'<span class="fail">Pifia natural</span>':'');
+    showRoll('<span class="big">'+tot+'</span>  <b>d20 '+use+'</b> + 6 '+
+      (mode==='normal'?'':'<span style="color:var(--dim2)">('+a+', '+bb+')</span> ')+tag);
+  });
+});
+R.querySelectorAll('[data-init]').forEach(function(b){
+  b.addEventListener('click',function(){var a=d(20);showRoll('<span class="big">'+(a+1)+'</span>  <b>d20 '+a+'</b> + 1 iniciativa');});
+});
+
+/* ================= SPELLS ================= */
+var SPELLS=[
+ {id:'firebolt',n:'Rayo de Fuego',en:'Fire Bolt',lv:0,src:'sorcerer',time:'action',
+  range:'180 pies',roll:'Ataque +6',dmg:'2d10',type:'fuego',comp:'V, S',dur:'Instantáneo',
+  quick:'2d10 · 180 pies',
+  use:'Tu ataque de todos los turnos. Ignora cobertura media y de tres cuartos, y no sufre desventaja aunque tengas a alguien encima.',
+  warn:'Es un truco: no gasta espacio y nunca dispara oleada.'},
+ {id:'sliver',n:'Esquirla Mental',en:'Mind Sliver',lv:0,src:'sorcerer',time:'action',
+  range:'60 pies',roll:'Salvación INT CD 14',dmg:'2d6',type:'psíquico',comp:'V',dur:'1 asalto',
+  quick:'2d6 · salv. INT',
+  use:'Si falla, resta <b>1d4 de su siguiente salvación</b> hasta el final de tu próximo turno. Lánzalo justo antes de tu Bola de Fuego.',
+  warn:'No es tirada de ataque. Hechicería Innata le sube la CD, no le da ventaja, y Francotirador no le extiende el alcance.'},
+ {id:'illusion',n:'Ilusión Menor',en:'Minor Illusion',lv:0,src:'sorcerer',time:'action',
+  range:'30 pies',roll:'—',comp:'S, M',dur:'1 minuto',quick:'1 min · sin conc.',
+  use:'Un sonido <b>o</b> un objeto de 5 pies, no los dos. Una voz tras una puerta, un muro falso, pruebas que respalden tu mentira.',
+  warn:'Quien sospeche puede estudiarla con Investigación contra CD 14. No aguanta escrutinio: aguanta tres segundos.'},
+ {id:'resistance',n:'Resistencia',en:'Resistance',lv:0,src:'feat',time:'action',
+  range:'Toque',roll:'—',comp:'V, S',dur:'Concentración, 1 min',quick:'+1d4 a una salv.',
+  use:'Suma 1d4 a una sola salvación y termina.',
+  warn:'Viene del dote de druida: no recibe Hechicería Innata y nunca dispara oleada.'},
+ {id:'poison',n:'Rociada Venenosa',en:'Poison Spray',lv:0,src:'feat',time:'action',
+  range:'90 pies',roll:'Ataque +6',dmg:'2d12',type:'veneno',comp:'V, S',dur:'Instantáneo',
+  quick:'2d12 · 90 pies',
+  use:'Transmútalo por 1 PH y deja de ser el truco flojo que parece.',
+  warn:'El veneno es el tipo de daño más resistido del juego. Además es del dote: sin Hechicería Innata, sin oleada.'},
+
+ {id:'magearmor',n:'Armadura de Mago',en:'Mage Armor',lv:1,src:'sorcerer',time:'action',
+  range:'Toque',roll:'—',comp:'V, S, M',dur:'8 horas',quick:'CA 14 · 8 h',
+  use:'Lánzalo cada mañana y olvídate. Tu CA pasa de 11 a <b>14</b> todo el día.'},
+ {id:'shield',n:'Escudo',en:'Shield',lv:1,src:'sorcerer',time:'reaction',
+  range:'Personal',roll:'—',comp:'V, S',dur:'1 asalto',quick:'REACCIÓN · +5 CA',
+  use:'+5 de CA, incluso contra el ataque que la disparó. También te inmuniza contra Proyectil Mágico.',
+  warn:'Reserva un espacio de nivel 1 todo el día para esto. Es tu mejor conjuro defensivo.'},
+ {id:'sleep',n:'Dormir',en:'Sleep',lv:1,src:'sorcerer',time:'action',
+  range:'60 pies · esfera 5',roll:'Salvación SAB CD 14',comp:'V, S, M',dur:'Concentración, 1 min',
+  quick:'Salv. SAB · Incapacitado',
+  use:'Los que fallan quedan Incapacitados. Repiten salvación al final de cada turno suyo.',
+  warn:'Envejece mal a partir de aquí. Candidato a cambiar al subir de nivel.'},
+ {id:'missile',n:'Proyectil Mágico',en:'Magic Missile',lv:1,src:'sorcerer',time:'action',
+  range:'120 pies',roll:'Impacto automático',dmg:'3x1d4+1',type:'fuerza',comp:'V, S',dur:'Instantáneo',
+  quick:'3 dardos · sin fallo',
+  use:'Tres dardos que <b>nunca fallan</b>, repartidos como quieras. Para rematar, contra invisibles, o cuando no puedes permitirte fallar. A nivel 3 son cinco dardos.',
+  warn:'Daño de fuerza: NO se puede transmutar.'},
+ {id:'detect',n:'Detectar Magia',en:'Detect Magic',lv:1,src:'feat',time:'action',
+  range:'Personal, 30 pies',roll:'—',comp:'V, S',dur:'Concentración, 10 min',quick:'Ritual · 1 gratis/día',
+  use:'Gratis una vez por descanso largo gracias al dote, y además es ritual: diez minutos sin gastar nada.',
+  warn:'Del dote de druida. Cámbialo por Fuego Feérico al subir de nivel — le daría ventaja a todo el grupo.'},
+
+ {id:'scorching',n:'Rayo Abrasador',en:'Scorching Ray',lv:2,src:'sorcerer',time:'action',
+  range:'180 pies',roll:'3 ataques +6',dmg:'3x2d6',type:'fuego',comp:'V, S',dur:'Instantáneo',
+  quick:'3 rayos · 2d6 c/u',
+  use:'Un rayo por objetivo, o los tres al mismo. <b>Tu mejor turno contra un jefe solo</b>, sobre todo con Hechicería Innata: tres ataques con ventaja.',
+  warn:'Sí llega a 180 pies: pide tirada de ataque, así que Francotirador le aplica.'},
+ {id:'misty',n:'Paso Brumoso',en:'Misty Step',lv:2,src:'sorcerer',time:'bonus',
+  range:'30 pies',roll:'Sin tirada',comp:'V',dur:'Instantáneo',quick:'ADICIONAL · 30 pies',
+  use:'Teletransporte sin tirada y sin ataque de oportunidad. Necesitas ver el destino. Súbete a un techo y con 180 pies de alcance eres intocable.',
+  warn:'Gasta tu espacio del turno. Después solo puedes lanzar un truco, nada de nivel 1+.'},
+ {id:'aganazzar',n:'Abrasador de Aganazzar',en:"Aganazzar's Scorcher",lv:2,src:'sorcerer',time:'action',
+  range:'Línea de 30 pies',roll:'Salvación DES CD 14',dmg:'3d8',type:'fuego',comp:'V, S, M',dur:'Instantáneo',
+  quick:'Línea 30 · 3d8',
+  use:'Mitad de daño si salva.',
+  warn:'Se solapa con Rayo Abrasador y con Bola de Fuego. Es tu candidato más claro a cambiar al subir de nivel.'},
+
+ {id:'fireball',n:'Bola de Fuego',en:'Fireball',lv:3,src:'sorcerer',time:'action',
+  range:'150 pies · radio 20',roll:'Salvación DES CD 14',dmg:'8d6',type:'fuego',comp:'V, S, M',dur:'Instantáneo',
+  quick:'8d6 · radio 20',
+  use:'Mitad si salva. Desde <b>tres enemigos</b> vale la pena; con dos, no. Prende objetos que nadie lleve encima.',
+  warn:'No tienes Conjuro Cuidadoso: el radio se come a tus aliados. Y como no pide tirada de ataque, Francotirador no le extiende el alcance.'}
+];
+
+function slotBank(lv){return lv===1?B.s1:lv===2?B.s2:lv===3?B.s3:null;}
+
+function cast(sp,quickened){
+  var msgs=[],ok=true;
+  if(sp.lv>0){
+    if(turn.slot){msgs.push('Ya gastaste un espacio este turno. Solo puedes lanzar trucos.');ok=false;}
+    if(turn.quick){msgs.push('Aceleraste algo este turno: no puedes lanzar nada de nivel 1+.');ok=false;}
+    var bk=slotBank(sp.lv);
+    if(ok&&bk&&bk.left===0){msgs.push('No te quedan espacios de nivel '+sp.lv+'.');ok=false;}
+  }
+  if(quickened){
+    if(turn.bonus){msgs.push('Ya usaste tu acción adicional.');ok=false;}
+    if(B.sp.left<2){msgs.push('No te quedan 2 puntos de hechicería.');ok=false;}
+  }else if(sp.time==='bonus'&&turn.bonus){msgs.push('Ya usaste tu acción adicional.');ok=false;}
+  else if(sp.time==='action'&&turn.action){msgs.push('Ya usaste tu acción.');ok=false;}
+
+  var box=$('#out-'+sp.id);
+  if(!ok){box.innerHTML='<span class="fail">No puedes: </span>'+msgs.join(' ');return;}
+
+  if(sp.lv>0){slotBank(sp.lv).spend(1);turn.slot=true;}
+  if(quickened){B.sp.spend(2);turn.bonus=true;turn.quick=true;}
+  else if(sp.time==='bonus')turn.bonus=true;
+  else if(sp.time==='action')turn.action=true;
+
+  var line='<b>'+sp.n+'</b> lanzado'+(quickened?' <span style="color:var(--verd)">acelerado</span>':'')+'.';
+  if(sp.dmg){
+    if(sp.dmg==='3x1d4+1'){var t=0,p=[];for(var i=0;i<3;i++){var r=d(4)+1;p.push(r);t+=r;}
+      line+='<br><span class="big">'+t+'</span> daño de fuerza <span style="color:var(--dim2)">('+p.join(' + ')+')</span>';}
+    else if(sp.dmg==='3x2d6'){var tt=0,pp=[];for(var j=0;j<3;j++){var rr=roll('2d6');pp.push(rr.sum);tt+=rr.sum;}
+      line+='<br><span class="big">'+tt+'</span> si aciertan los tres <span style="color:var(--dim2)">(rayos: '+pp.join(' · ')+')</span>';}
+    else{var r2=roll(sp.dmg);line+='<br><span class="big">'+r2.sum+'</span> daño de '+sp.type+' <span style="color:var(--dim2)">('+r2.rolls.join(' + ')+')</span>';}
+  }
+  if(sp.lv>0&&sp.src==='sorcerer'&&!turn.surge){
+    turn.surge=true;
+    line+='<br><span style="color:var(--surge)">Gastaste un espacio: puedes tirar el d20 de oleada en la pestaña Combate.</span>';
+  }
+  box.innerHTML=line;
+  vitals();
+}
+
+function renderSpells(){
+  var host=$('#spells'),html='',last=-1;
+  SPELLS.forEach(function(sp){
+    if(sp.lv!==last){
+      last=sp.lv;
+      html+='<div class="eyeb">'+(sp.lv===0?'Trucos · a voluntad':'Nivel '+sp.lv)+'</div>';
+    }
+    html+='<details class="sp'+(sp.src==='feat'?' feat':'')+'" id="sp-'+sp.id+'"><summary>'+
+      '<span class="lvl'+(sp.lv===0?' c':'')+'">'+(sp.lv===0?'TR':sp.lv)+'</span>'+
+      '<span class="nm">'+sp.n+'<i>'+sp.en+(sp.src==='feat'?' · del dote':'')+'</i></span>'+
+      '<span class="qk">'+sp.quick+'</span></summary><div class="spb">'+
+      '<div class="stat">'+
+        '<div><div class="k">Lanzamiento</div><div class="v">'+
+          (sp.time==='action'?'1 acción':sp.time==='bonus'?'A. adicional':'1 reacción')+'</div></div>'+
+        '<div><div class="k">Alcance</div><div class="v">'+sp.range+'</div></div>'+
+        '<div><div class="k">Tirada</div><div class="v">'+sp.roll+'</div></div>'+
+        '<div><div class="k">Duración</div><div class="v">'+sp.dur+'</div></div>'+
+      '</div>'+
+      '<div class="use"><b>Cómo usarlo.</b> '+sp.use+'</div>'+
+      (sp.warn?'<div class="warn"><b>Ojo.</b> '+sp.warn+'</div>':'')+
+      '<div class="row">'+
+        '<button class="btn solid" type="button" data-cast="'+sp.id+'">Lanzar</button>'+
+        (sp.time==='action'&&sp.lv>0?'<button class="btn chaos" type="button" data-quick="'+sp.id+'">Acelerar · 2 PH</button>':'')+
+        (['fuego','veneno'].indexOf(sp.type)>-1?'<button class="btn hot" type="button" data-trans="'+sp.id+'">Transmutar · 1 PH</button>':'')+
+      '</div><div class="out" id="out-'+sp.id+'"></div></div></details>';
+  });
+  host.innerHTML=html;
+
+  host.querySelectorAll('[data-cast]').forEach(function(b){
+    b.addEventListener('click',function(){cast(SPELLS.find(function(s){return s.id===b.dataset.cast;}),false);});
+  });
+  host.querySelectorAll('[data-quick]').forEach(function(b){
+    b.addEventListener('click',function(){cast(SPELLS.find(function(s){return s.id===b.dataset.quick;}),true);});
+  });
+  host.querySelectorAll('[data-trans]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var box=$('#out-'+b.dataset.trans);
+      if(B.sp.left<1){box.innerHTML='<span class="fail">No te quedan puntos de hechicería.</span>';return;}
+      B.sp.spend(1);
+      box.innerHTML='<b>Transmutado.</b> Elige el tipo: ácido, frío, fuego, relámpago, veneno o trueno. −1 PH.';
+    });
+  });
+}
+renderSpells();
+
+/* ================= TURN PLANNER ================= */
+var PLAN=[
+ {k:'Combate',t:'Tres o más enemigos juntos',
+  bonus:'Hechicería Innata — te sube la CD a 15 durante un minuto.',
+  action:'Bola de Fuego. 8d6, salvación DES CD 15, radio de 20 pies.',
+  cost:'1 espacio de nivel 3 · 1 uso de Innata',
+  note:'Comprueba que no haya aliados dentro del radio. No tienes Conjuro Cuidadoso.'},
+ {k:'Combate',t:'Un jefe, solo',
+  bonus:'Hechicería Innata — ventaja en tus ataques de conjuro.',
+  action:'Rayo Abrasador. Tres ataques a +6 con ventaja, 2d6 cada uno.',
+  cost:'1 espacio de nivel 2 · 1 uso de Innata',
+  note:'Bola de Fuego contra un solo enemigo desperdicia el espacio.'},
+ {k:'Combate',t:'Turno normal, sin prisa',
+  bonus:'Nada. Guárdala.',
+  action:'Rayo de Fuego. 2d10 a 180 pies, ignorando cobertura.',
+  cost:'Gratis',
+  note:'Conserva espacios. Los trucos no se acaban.'},
+ {k:'Emergencia',t:'Me alcanzaron en melé',
+  bonus:'Paso Brumoso. 30 pies, sin ataque de oportunidad.',
+  action:'Un truco: Rayo de Fuego o Esquirla Mental.',
+  cost:'1 espacio de nivel 2',
+  note:'Paso Brumoso ya gastó tu espacio del turno. Nada de nivel 1+ después.'},
+ {k:'Emergencia',t:'Me van a pegar ahora mismo',
+  bonus:'—',
+  action:'Escudo, como REACCIÓN cuando te ataquen. +5 CA, incluso contra ese ataque.',
+  cost:'1 espacio de nivel 1',
+  note:'Por eso conviene reservar un espacio de nivel 1 todo el día.'},
+ {k:'Precisión',t:'Hay que rematar sin fallar',
+  bonus:'—',
+  action:'Proyectil Mágico. Tres dardos que impactan siempre.',
+  cost:'1 espacio de nivel 1',
+  note:'Sirve contra invisibles y contra el que está a dos puntos de caer.'},
+ {k:'Máximo daño',t:'Todo o nada, 2 PH',
+  bonus:'Bola de Fuego acelerada.',
+  action:'Esquirla Mental PRIMERO, luego la bola. El −1d4 cae sobre su salvación.',
+  cost:'1 espacio de nivel 3 · 2 PH',
+  note:'Orden importante: el truco va con la acción, la bola acelerada con la adicional. Al revés es ilegal.'},
+ {k:'Adaptación',t:'Es inmune o resistente al fuego',
+  bonus:'—',
+  action:'Lo que ibas a lanzar, con Conjuro Transmutado: ácido, frío, relámpago, veneno o trueno.',
+  cost:'1 PH',
+  note:'Funciona en Rayo de Fuego, Rayo Abrasador, Aganazzar, Bola de Fuego y Rociada Venenosa. No en Proyectil Mágico.'},
+ {k:'Caos',t:'Quiero provocar una oleada',
+  bonus:'—',
+  action:'Activa Mareas de Caos, luego lanza cualquier conjuro con espacio. La oleada es automática.',
+  cost:'1 uso de Mareas de Caos',
+  note:'Y Mareas se recarga con ese mismo conjuro. Puedes repetir el ciclo mientras te queden espacios.'}
+];
+(function(){
+  var host=$('#plan');
+  PLAN.forEach(function(p,i){
+    var b=document.createElement('button');
+    b.type='button'; b.className='sit'; b.setAttribute('aria-pressed','false');
+    b.innerHTML='<span class="t">'+p.k+'</span>'+p.t;
+    b.addEventListener('click',function(){
+      host.querySelectorAll('.sit').forEach(function(o){o.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');
+      $('#answer').innerHTML='<div class="answer"><h3>'+p.t+'</h3><dl class="seq">'+
+        '<dt>A. adicional</dt><dd>'+p.bonus+'</dd>'+
+        '<dt>Acción</dt><dd>'+p.action+'</dd>'+
+        '</dl><span class="cost">'+p.cost+'</span>'+
+        '<p style="font-size:14px;color:var(--dim);margin-top:12px">'+p.note+'</p></div>';
+    });
+    host.appendChild(b);
+  });
+})();
+
+/* ================= SKILLS & ABILITIES ================= */
+var SKILLS=[['Engaño',6,1],['Persuasión',6,1],['Intimidación',6,1],['Perspicacia',4,1],
+ ['Percepción',4,1],['Supervivencia',4,1],['Juego de manos',4,1],['Naturaleza',3,1],
+ ['Interpretación',3,0],['Acrobacias',1,0],['Sigilo',1,0],['Medicina',1,0],
+ ['Trato con animales',1,0],['C. arcano',0,0],['Historia',0,0],['Investigación',0,0],
+ ['Religión',0,0],['Atletismo',-1,0]];
+(function(){
+  var host=$('#skills');
+  SKILLS.forEach(function(s){
+    var b=document.createElement('button');
+    b.type='button'; if(s[2])b.className='p';
+    b.innerHTML='<span>'+s[0]+'</span><b>'+(s[1]>=0?'+':'')+s[1]+'</b>';
+    b.addEventListener('click',function(){
+      var a=d(20),tot=a+s[1];
+      $('#skout').innerHTML='<span class="big">'+tot+'</span>  <b>'+s[0]+'</b> · d20 '+a+' '+(s[1]>=0?'+':'−')+' '+Math.abs(s[1])+
+        (a===20?' <span class="crit">¡20 natural!</span>':a===1?' <span class="fail">1 natural</span>':'');
+    });
+    host.appendChild(b);
+  });
+})();
+(function(){
+  var A=[['Fuerza',8,'−1'],['Destreza',13,'+1'],['Constitución',15,'+2'],
+         ['Inteligencia',11,'+0'],['Sabiduría',12,'+1'],['Carisma',16,'+3']];
+  var S={'Constitución':'+5','Carisma':'+6'};
+  $('#abils').innerHTML=A.map(function(a){
+    return '<div class="card"><h4>'+a[0]+'</h4>'+
+      '<div style="font-family:var(--disp);font-variation-settings:\'WONK\' 1;font-weight:900;font-size:32px;line-height:1">'+a[1]+
+      '<span style="font-family:var(--mono);font-size:13px;color:var(--verd);margin-left:8px">'+a[2]+'</span></div>'+
+      '<p style="font-size:12.5px;color:var(--dim2);margin-top:7px">Salvación '+(S[a[0]]||a[2])+(S[a[0]]?' · competente':'')+'</p></div>';
+  }).join('');
+})();
+$('#feats').innerHTML=[
+ ['Hechicería Innata','2 por descanso largo · acción adicional · 1 minuto. +1 a la CD de tus conjuros de hechicero y ventaja en sus tiradas de ataque.'],
+ ['Fuente de Magia','5 PH. Convertir espacio en PH sin acción. Crear espacios con acción adicional: 2 PH nivel 1, 3 PH nivel 2, 5 PH nivel 3.'],
+ ['Metamagia','Acelerado (2 PH) y Transmutado (1 PH). Solo una metamagia por conjuro. Funcionan con todos tus conjuros, incluidos los del dote.'],
+ ['Restauración de Hechicero','Una vez por descanso largo, al terminar un descanso corto recuperas hasta 2 PH.'],
+ ['Oleada de Magia Salvaje','Una vez por turno, tras lanzar un conjuro de hechicero con espacio, tira 1d20. Con un 20, tiras en la tabla.'],
+ ['Mareas de Caos','Ventaja en una prueba de d20. Se recarga al lanzar un conjuro con espacio — y esa oleada es automática.'],
+ ['Francotirador de Conjuros','+60 pies a conjuros con tirada de ataque. Ignoras cobertura media y de tres cuartos. Sin desventaja en melé.'],
+ ['Iniciado en la Magia (Druida)','Resistencia y Rociada Venenosa como trucos, Detectar Magia gratis 1/descanso largo. Aptitud: Carisma.'],
+ ['Humano','Inspiración Heroica cada descanso largo · una habilidad extra · un dote de Origen.']
+].map(function(f){return '<div class="card"><h4>'+f[0]+'</h4><p style="font-size:14px;color:var(--dim)">'+f[1]+'</p></div>';}).join('');
+
+/* ================= NOTES (persisted) ================= */
+var KEY='soryn:notes', notes=[], canSave=true;
+function setStatus(t){$('#nstatus').textContent=t;}
+async function loadNotes(){
+  try{
+    var r=await window.storage.get(KEY);
+    notes=r&&r.value?JSON.parse(r.value):[];
+    setStatus(notes.length?notes.length+' recuerdos guardados':'Sin recuerdos todavía.');
+  }catch(e){
+    notes=[];
+    try{await window.storage.set(KEY,JSON.stringify([]));setStatus('Sin recuerdos todavía.');}
+    catch(e2){canSave=false;setStatus('No se pudo abrir el guardado. Las notas durarán solo esta sesión.');}
+  }
+  renderNotes();
+}
+async function saveNotes(){
+  if(!canSave)return;
+  try{await window.storage.set(KEY,JSON.stringify(notes));
+    setStatus(notes.length?notes.length+' recuerdos guardados':'Sin recuerdos todavía.');}
+  catch(e){setStatus('No se pudo guardar.');}
+}
+function addNote(title,body,tag){
+  notes.unshift({id:Date.now()+''+d(999),t:title,b:body,g:tag,
+    d:new Date().toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'})});
+  renderNotes(); saveNotes();
+}
+function renderNotes(){
+  var host=$('#notes');
+  if(!notes.length){host.innerHTML='<p class="empty">Nada guardado todavía. Anota a quién estafaste antes de que se te olvide.</p>';return;}
+  host.innerHTML=notes.map(function(n){
+    return '<div class="note"><div class="nh"><div class="nt">'+esc(n.t)+'</div>'+
+      '<div class="nd">'+n.d+'</div>'+
+      '<button class="del" type="button" data-del="'+n.id+'">Borrar</button></div>'+
+      (n.b?'<div class="nb">'+esc(n.b)+'</div>':'')+
+      '<span class="tag '+n.g+'">'+n.g+'</span></div>';
+  }).join('');
+  host.querySelectorAll('[data-del]').forEach(function(b){
+    b.addEventListener('click',function(){
+      notes=notes.filter(function(n){return n.id!==b.dataset.del;});
+      renderNotes(); saveNotes();
+    });
+  });
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+$('#nadd').addEventListener('click',function(){
+  var t=$('#ntitle').value.trim(), b=$('#nbody').value.trim();
+  if(!t&&!b)return;
+  addNote(t||'Sin título',b,$('#ntag').value);
+  $('#ntitle').value=''; $('#nbody').value='';
+});
+loadNotes();
+
+/* ================= NAV ================= */
+var navs=R.querySelectorAll('.tabs button');
+navs.forEach(function(b){
+  b.addEventListener('click',function(){
+    navs.forEach(function(o){
+      var on=o===b;
+      o.setAttribute('aria-current',on);
+      $('#v-'+o.dataset.go).classList.toggle('on',on);
+    });
+  });
+});
+
+vitals();
+})();
+</script>

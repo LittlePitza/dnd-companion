@@ -1,0 +1,126 @@
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.attack {
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.bonus {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 900;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--color-sulfur);
+  min-inline-size: 2.75rem;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.english {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--color-dimmer);
+  text-transform: uppercase;
+}
+
+.tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-inline-start: auto;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-dim);
+  border: 1px solid var(--color-line);
+  padding: 0.1rem var(--space-2);
+}
+
+.tagAdvantage {
+  color: var(--color-surge);
+  border-color: rgb(163 119 221 / 55%);
+}
+
+.tagSlot {
+  color: var(--color-sulfur);
+  border-color: rgb(239 171 68 / 45%);
+}
+
+.meta {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-dim);
+  letter-spacing: 0.06em;
+}
+
+.notes {
+  font-size: var(--text-base);
+  color: var(--color-dimmer);
+  margin-top: var(--space-2);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+.result {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-dim);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.total {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 900;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-bone);
+}
+
+.critical {
+  color: var(--color-verdigris);
+}
+
+.fumble {
+  color: #d98a92;
+}

@@ -1,0 +1,85 @@
+.list {
+  display: grid;
+  gap: var(--space-2);
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.entry {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  border: 1px solid var(--color-line-soft);
+  background: var(--color-panel);
+  padding: var(--space-2) var(--space-3);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 900;
+  font-size: 1.5rem;
+  line-height: 1;
+  min-inline-size: 2.5rem;
+  text-align: right;
+}
+
+.body {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.title {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.detail {
+  font-size: var(--text-base);
+  color: var(--color-dim);
+}
+
+.time {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-dimmer);
+  white-space: nowrap;
+}
+
+.good {
+  border-left: 2px solid var(--color-verdigris);
+}
+
+.good .value {
+  color: var(--color-verdigris);
+}
+
+.bad {
+  border-left: 2px solid var(--color-blood);
+}
+
+.bad .value {
+  color: #d98a92;
+}
+
+.chaos {
+  border-left: 2px solid var(--color-surge);
+}
+
+.chaos .value {
+  color: var(--color-surge);
+}
+
+.fire {
+  border-left: 2px solid var(--color-ember);
+}
+
+.fire .value {
+  color: var(--color-sulfur);
+}
+
+.neutral {
+  border-left: 2px solid var(--color-line);
+}

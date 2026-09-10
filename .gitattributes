@@ -1,0 +1,36 @@
+# The project is edited on Windows and built on Linux runners: normalise line
+# endings in the repository so a checkout never shows a whole file as changed.
+* text=auto eol=lf
+
+# Text formats, spelled out so nothing depends on content sniffing.
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.svg text eol=lf
+
+# Windows-only helpers keep CRLF or they will not run.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries: never touched, never diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp3 binary
+*.pdf binary
+
+# Generated and noisy in review; collapsed by default on GitHub.
+package-lock.json linguist-generated=true diff=json

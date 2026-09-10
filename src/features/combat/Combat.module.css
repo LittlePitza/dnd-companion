@@ -1,0 +1,288 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.rowTight {
+  gap: var(--space-1);
+}
+
+.hitPoints {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.hitPointsValue {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 900;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.hitPointsMax {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-dimmer);
+}
+
+.bloodied {
+  color: var(--color-sulfur);
+}
+
+.critical,
+.down {
+  color: var(--color-ember);
+}
+
+.customDamage {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.numberInput {
+  inline-size: 4.5rem;
+  background: var(--color-pit);
+  border: 1px solid var(--color-line);
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  padding: var(--space-2);
+}
+
+.deathSaves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line-soft);
+}
+
+.deathSaveGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-dimmer);
+}
+
+.deathDot {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-dimmer);
+}
+
+.deathDotSuccess {
+  background: var(--color-verdigris);
+  border-color: var(--color-verdigris);
+}
+
+.deathDotFailure {
+  background: var(--color-blood);
+  border-color: var(--color-blood);
+}
+
+.resourceStack {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.effectList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.effectRow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  padding: var(--space-3);
+}
+
+.effectActive {
+  border-color: rgb(163 119 221 / 55%);
+  background: rgb(163 119 221 / 10%);
+}
+
+.effectName {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.effectDescription {
+  font-size: var(--text-base);
+  color: var(--color-dim);
+  margin-top: var(--space-1);
+}
+
+.effectDuration {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-dimmer);
+  letter-spacing: 0.1em;
+}
+
+.situations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--space-2);
+}
+
+.situation {
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  padding: var(--space-3);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.situation:hover {
+  border-color: var(--color-dim);
+}
+
+.situation[aria-pressed='true'] {
+  border-color: var(--color-ember);
+  background: var(--color-panel-raised);
+}
+
+.situationCategory {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-dimmer);
+  margin-bottom: var(--space-1);
+}
+
+.answer {
+  border: 1px solid var(--color-line);
+  border-left: 2px solid var(--color-ember);
+  background: var(--color-panel);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.answerTitle {
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: var(--space-3);
+}
+
+.sequence {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.sequenceTerm {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-dimmer);
+  padding-top: 0.2rem;
+}
+
+.sequenceDetail {
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.cost {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-sulfur);
+  border: 1px solid rgb(239 171 68 / 35%);
+  padding: var(--space-1) var(--space-2);
+}
+
+.note {
+  font-size: var(--text-base);
+  color: var(--color-dim);
+  margin-top: var(--space-3);
+}
+
+.die {
+  inline-size: 5rem;
+  block-size: 5rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  font-variation-settings: 'WONK' 1;
+  font-weight: 900;
+  font-size: 2rem;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.die:hover {
+  border-color: var(--color-surge);
+}
+
+.dieHit {
+  border-color: var(--color-surge);
+  background: rgb(163 119 221 / 20%);
+  color: var(--color-surge);
+}
+
+.wildMagic {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.wildMagicBody {
+  flex: 1 1 15rem;
+}
+
+.wildMagicHeadline {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-dim);
+}
+
+.wildMagicHit {
+  color: var(--color-surge);
+}

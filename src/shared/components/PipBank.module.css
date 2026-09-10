@@ -1,0 +1,73 @@
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-dimmer);
+  min-width: 5.5rem;
+}
+
+.pips {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.pip {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--color-dimmer);
+  transform: rotate(45deg);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.pip:hover {
+  border-color: var(--color-bone);
+}
+
+.available {
+  background: var(--color-bone);
+  border-color: var(--color-bone);
+}
+
+.availableSurge {
+  background: var(--color-surge);
+  border-color: var(--color-surge);
+}
+
+.availableEmber {
+  background: var(--color-sulfur);
+  border-color: var(--color-sulfur);
+}
+
+.availableVerdigris {
+  background: var(--color-verdigris);
+  border-color: var(--color-verdigris);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-dim);
+  margin-inline-start: auto;
+  white-space: nowrap;
+}
+
+/* Conjured slots read as outlined, to mark that they vanish on a long rest. */
+.conjured {
+  border-style: dashed;
+  border-color: var(--color-surge);
+  background: rgb(163 119 221 / 30%);
+}
