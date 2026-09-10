@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { Icon } from './Icon'
+import type { IconName } from './Icon'
 import styles from './Surfaces.module.css'
 
 export function Card({
@@ -86,6 +88,11 @@ export function StatTile({
   )
 }
 
-export function EmptyState({ children }: { children: ReactNode }) {
-  return <p className={styles.empty}>{children}</p>
+export function EmptyState({ children, icon }: { children: ReactNode; icon?: IconName }) {
+  return (
+    <div className={styles.empty}>
+      {icon ? <Icon name={icon} size={28} strokeWidth={1.5} className={styles.emptyIcon} /> : null}
+      <p>{children}</p>
+    </div>
+  )
 }

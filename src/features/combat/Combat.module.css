@@ -150,7 +150,7 @@
 }
 
 .effectRow:hover {
-  transform: translateX(2px);
+  border-color: var(--border-strong);
 }
 
 /* The toggle keeps its width; only the description reflows. */
@@ -208,7 +208,6 @@
   font-size: var(--text-base);
   font-weight: 600;
   padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
   animation: rise-in var(--dur-base) var(--ease-out) both;
   animation-delay: calc(var(--stagger-index, 0) * 35ms);
   transition:
@@ -218,14 +217,13 @@
 }
 
 .situation:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
-  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
 }
 
 .situation[aria-pressed='true'] {
   border-color: var(--accent);
-  box-shadow: var(--shadow-accent);
+  background: var(--accent-quiet);
 }
 
 /* A crimson wash slides up behind the selected card. */

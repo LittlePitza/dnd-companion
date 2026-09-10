@@ -1,19 +1,20 @@
+/* A three-column grid rather than a wrapping flex row: the label, the pips and
+   the tally always line up across every resource, however many pips there are. */
 .wrapper {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(3.5rem, auto) 1fr auto;
   align-items: center;
-  gap: var(--space-2) var(--space-3);
-  padding: var(--space-2) 0;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
 }
 
 .label {
-  font-family: var(--font);
   font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-faint);
-  min-width: 5rem;
+  white-space: nowrap;
 }
 
 .pips {
@@ -24,12 +25,12 @@
 
 .pip {
   position: relative;
-  inline-size: 1.375rem;
-  block-size: 1.375rem;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
   padding: 0;
   cursor: pointer;
   background: var(--surface-inset);
-  border: 2px solid var(--border-strong);
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
   transition:
     background var(--dur-fast) var(--ease-out),
@@ -38,8 +39,8 @@
 }
 
 .pip:hover {
-  border-color: var(--accent);
-  transform: scale(1.12);
+  border-color: var(--text-faint);
+  transform: scale(1.14);
 }
 
 .pip:active {
@@ -91,11 +92,10 @@
 }
 
 .count {
-  font-family: var(--font);
-  font-weight: 800;
-  font-size: var(--text-base);
+  font-weight: 700;
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
-  margin-inline-start: auto;
+  color: var(--text-faint);
   white-space: nowrap;
+  text-align: right;
 }

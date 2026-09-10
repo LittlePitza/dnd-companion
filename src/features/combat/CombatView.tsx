@@ -7,42 +7,38 @@ import { RestPanel } from './RestPanel'
 import { TurnPlanner } from './TurnPlanner'
 import { TurnTracker } from './TurnTracker'
 import { WildMagicPanel } from './WildMagicPanel'
+import styles from './CombatView.module.css'
 
 /** The table-side console: what to do, what it costs, and what is left. */
 export function CombatView({ onSurge }: { onSurge: () => void }) {
   return (
-    <>
-      <Section
-        heading="¿Qué hago este turno?"
-        lede="Toca tu situación y te doy la secuencia exacta, ya comprobada contra las reglas de 2024."
-      >
-        <TurnPlanner />
-      </Section>
+    <div className={styles.layout}>
+      <div className={styles.main}>
+        <Section
+          heading="¿Qué hago este turno?"
+          lede="Toca tu situación y te doy la secuencia exacta, ya comprobada contra las reglas de 2024."
+        >
+          <TurnPlanner />
+        </Section>
 
-      <Section heading="Estado">
-        <Grid>
-          <HitPointTracker />
-          <TurnTracker />
-        </Grid>
-      </Section>
+        <Section heading="Recursos">
+          <ResourceTracker />
+        </Section>
 
-      <Section heading="Recursos">
-        <ResourceTracker />
-      </Section>
+        <Section heading="Efectos y caos">
+          <Grid>
+            <EffectToggles />
+            <WildMagicPanel onSurge={onSurge} />
+          </Grid>
+        </Section>
+      </div>
 
-      <Section heading="Efectos y caos">
-        <Grid>
-          <EffectToggles />
-          <WildMagicPanel onSurge={onSurge} />
-        </Grid>
-      </Section>
-
-      <Section heading="Descanso y bitácora">
-        <Grid>
-          <RestPanel />
-          <RollLog />
-        </Grid>
-      </Section>
-    </>
+      <aside className={styles.side} aria-label="Estado del personaje">
+        <HitPointTracker />
+        <TurnTracker />
+        <RestPanel />
+        <RollLog />
+      </aside>
+    </div>
   )
 }

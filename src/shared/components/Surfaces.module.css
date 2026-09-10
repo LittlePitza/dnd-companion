@@ -6,7 +6,6 @@
   border-radius: var(--radius-lg);
   background: var(--surface);
   padding: var(--space-4);
-  box-shadow: var(--shadow-md);
   transition:
     border-color var(--dur-base) var(--ease-out),
     box-shadow var(--dur-base) var(--ease-out),
@@ -92,7 +91,7 @@
 }
 
 .gridNarrow {
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
 }
 
 /* ---- Stat tile ---- */
@@ -104,17 +103,14 @@
   border-radius: var(--radius-lg);
   background: var(--surface);
   padding: var(--space-3) var(--space-4);
-  box-shadow: var(--shadow-sm);
   transition:
-    transform var(--dur-base) var(--ease-spring),
     border-color var(--dur-base) var(--ease-out),
-    box-shadow var(--dur-base) var(--ease-out);
+    background var(--dur-base) var(--ease-out);
 }
 
 .statTile:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
   border-color: var(--border-strong);
+  background: var(--surface-hover);
 }
 
 .statLabel {
@@ -181,11 +177,18 @@
 /* ---- Empty state ---- */
 
 .empty {
-  border: 2px dashed var(--border-strong);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
+  padding: var(--space-6) var(--space-5);
   color: var(--text-faint);
   font-size: var(--text-base);
   text-align: center;
   background: var(--surface-inset);
+}
+
+.emptyIcon {
+  color: var(--border-strong);
 }

@@ -25,7 +25,7 @@ export function RollLog() {
   return (
     <Card title="Bitácora de la sesión">
       {log.length === 0 ? (
-        <EmptyState>
+        <EmptyState icon="dice">
           Aquí van tus tiradas, conjuros y oleadas. Se borra al cerrar la app.
         </EmptyState>
       ) : (

@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import { DEATH_SAVE_LIMIT } from '@/domain/session/types'
 import { vitalStatus } from '@/domain/session/hitPoints'
 import { Button } from '@/shared/components/Button'
-import { Card } from '@/shared/components/Surfaces'
+import { Icon } from '@/shared/components/Icon'
+import { useValueFlash } from '@/shared/hooks/useValueFlash'
 import { useActiveCharacter, useSession } from '@/store/selectors'
 import { useCampaignStore } from '@/store/useCampaignStore'
-import { DEATH_SAVE_LIMIT } from '@/domain/session/types'
-import styles from './Combat.module.css'
+import styles from './HitPointTracker.module.css'
 
-const QUICK_STEPS = [1, 5, 10]
+const STEPS = [10, 5, 1]
 
 const STATUS_CLASS: Record<string, string | undefined> = {
   bloodied: styles.bloodied,
@@ -17,8 +18,9 @@ const STATUS_CLASS: Record<string, string | undefined> = {
 }
 
 /**
- * Hit point control: quick steps for the common cases, a free-text field for
- * the big hits, and death saves once the character is down.
+ * The control a player touches most. Damage and healing are two separate
+ * segmented groups so the two directions cannot be confused mid-fight, with a
+ * free-text field for the big hits and death saves once the character drops.
  */
 export function HitPointTracker() {
   const character = useActiveCharacter()
@@ -30,49 +32,87 @@ export function HitPointTracker() {
   const useHitDie = useCampaignStore((state) => state.useHitDie)
 
   const [amount, setAmount] = useState('')
+  const flash = useValueFlash(session.currentHitPoints)
+
   const status = vitalStatus(session, character)
   const isDown = session.currentHitPoints === 0
+  const ratio = Math.max(0, session.currentHitPoints / character.maxHitPoints) * 100
 
-  const parsedAmount = Number.parseInt(amount, 10)
-  const hasAmount = Number.isFinite(parsedAmount) && parsedAmount > 0
+  const parsed = Number.parseInt(amount, 10)
+  const hasAmount = Number.isFinite(parsed) && parsed > 0
+
+  const applyExact = (action: (value: number) => void) => {
+    if (!hasAmount) return
+    action(parsed)
+    setAmount('')
+  }
 
   return (
-    <Card title="Puntos de golpe">
-      <p className={styles.hitPoints}>
-        <span className={[styles.hitPointsValue, STATUS_CLASS[status]].filter(Boolean).join(' ')}>
+    <section className={[styles.panel, STATUS_CLASS[status]].filter(Boolean).join(' ')}>
+      <h3 className={styles.heading}>
+        <Icon name="heart" size={12} strokeWidth={2.5} /> Puntos de golpe
+      </h3>
+
+      <p className={styles.readout}>
+        <span
+          className={[
+            styles.current,
+            flash === 'down' ? styles.flashDown : undefined,
+            flash === 'up' ? styles.flashUp : undefined,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          aria-live="polite"
+        >
           {session.currentHitPoints}
         </span>
-        <span className={styles.hitPointsMax}>
-          / {character.maxHitPoints}
-          {session.temporaryHitPoints > 0 ? ` · ${session.temporaryHitPoints} temporales` : ''}
-        </span>
+        <span className={styles.max}>/ {character.maxHitPoints}</span>
+        {session.temporaryHitPoints > 0 ? (
+          <span className={styles.temp}>+{session.temporaryHitPoints} temp.</span>
+        ) : null}
       </p>
 
-      <div className={styles.row}>
-        {QUICK_STEPS.map((step) => (
-          <Button
-            key={`damage-${step}`}
-            variant="hot"
-            size="small"
-            onClick={() => takeDamage(step)}
-          >
-            −{step}
-          </Button>
-        ))}
-        {QUICK_STEPS.map((step) => (
-          <Button key={`heal-${step}`} size="small" onClick={() => heal(step)}>
-            +{step}
-          </Button>
-        ))}
+      <div className={styles.track}>
+        <span className={styles.fill} style={{ width: `${ratio}%` }} />
       </div>
 
-      <div className={styles.customDamage}>
+      <div className={styles.steps}>
+        <div className={[styles.group, styles.damageGroup].join(' ')}>
+          {STEPS.map((step) => (
+            <button
+              key={`damage-${step}`}
+              type="button"
+              className={styles.step}
+              aria-label={`Recibir ${step} de daño`}
+              onClick={() => takeDamage(step)}
+            >
+              −{step}
+            </button>
+          ))}
+        </div>
+
+        <div className={[styles.group, styles.healGroup].join(' ')}>
+          {[...STEPS].reverse().map((step) => (
+            <button
+              key={`heal-${step}`}
+              type="button"
+              className={styles.step}
+              aria-label={`Curar ${step} puntos de golpe`}
+              onClick={() => heal(step)}
+            >
+              +{step}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.exact}>
         <label className="visually-hidden" htmlFor="hp-amount">
           Cantidad exacta de puntos de golpe
         </label>
         <input
           id="hp-amount"
-          className={styles.numberInput}
+          className={styles.input}
           type="number"
           min={1}
           inputMode="numeric"
@@ -80,36 +120,14 @@ export function HitPointTracker() {
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
         />
-        <Button
-          variant="hot"
-          size="small"
-          disabled={!hasAmount}
-          onClick={() => {
-            takeDamage(parsedAmount)
-            setAmount('')
-          }}
-        >
+        <Button size="small" disabled={!hasAmount} onClick={() => applyExact(takeDamage)}>
           Daño
         </Button>
-        <Button
-          size="small"
-          disabled={!hasAmount}
-          onClick={() => {
-            heal(parsedAmount)
-            setAmount('')
-          }}
-        >
+        <Button size="small" disabled={!hasAmount} onClick={() => applyExact(heal)}>
           Curar
         </Button>
-        <Button
-          size="small"
-          disabled={!hasAmount}
-          onClick={() => {
-            grantTemporary(parsedAmount)
-            setAmount('')
-          }}
-        >
-          Temporales
+        <Button size="small" disabled={!hasAmount} onClick={() => applyExact(grantTemporary)}>
+          Temp.
         </Button>
         <Button
           variant="chaos"
@@ -117,58 +135,62 @@ export function HitPointTracker() {
           disabled={session.hitDiceRemaining < 1}
           onClick={useHitDie}
         >
-          Dado de golpe ({session.hitDiceRemaining})
+          Dado {session.hitDiceRemaining}
         </Button>
       </div>
 
       {isDown ? (
         <div className={styles.deathSaves}>
-          <span className={styles.deathSaveGroup}>
+          <p className={styles.deathRow}>
             Éxitos
-            {Array.from({ length: DEATH_SAVE_LIMIT }, (_, index) => (
-              <span
-                key={index}
-                className={[
-                  styles.deathDot,
-                  index < session.deathSaves.successes ? styles.deathDotSuccess : undefined,
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              />
-            ))}
-          </span>
+            <span className={styles.deathDots}>
+              {Array.from({ length: DEATH_SAVE_LIMIT }, (_, index) => (
+                <span
+                  key={index}
+                  className={[
+                    styles.deathDot,
+                    index < session.deathSaves.successes ? styles.deathDotSuccess : undefined,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                />
+              ))}
+            </span>
+          </p>
 
-          <span className={styles.deathSaveGroup}>
+          <p className={styles.deathRow}>
             Fallos
-            {Array.from({ length: DEATH_SAVE_LIMIT }, (_, index) => (
-              <span
-                key={index}
-                className={[
-                  styles.deathDot,
-                  index < session.deathSaves.failures ? styles.deathDotFailure : undefined,
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              />
-            ))}
-          </span>
+            <span className={styles.deathDots}>
+              {Array.from({ length: DEATH_SAVE_LIMIT }, (_, index) => (
+                <span
+                  key={index}
+                  className={[
+                    styles.deathDot,
+                    index < session.deathSaves.failures ? styles.deathDotFailure : undefined,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                />
+              ))}
+            </span>
+          </p>
 
-          <div className={styles.row}>
+          <div className={styles.deathActions}>
             <Button size="small" onClick={() => markDeathSave('success')}>
               Éxito
             </Button>
-            <Button variant="hot" size="small" onClick={() => markDeathSave('failure')}>
+            <Button variant="danger" size="small" onClick={() => markDeathSave('failure')}>
               Fallo
             </Button>
             <Button variant="chaos" size="small" onClick={() => markDeathSave('critical-success')}>
-              20 natural
+              20 nat.
             </Button>
             <Button variant="danger" size="small" onClick={() => markDeathSave('critical-failure')}>
-              1 natural
+              1 nat.
             </Button>
           </div>
         </div>
       ) : null}
-    </Card>
+    </section>
   )
 }

@@ -2,7 +2,7 @@ import { useId, useMemo, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { MEMORY_CATEGORY_LABEL } from '@/content/labels'
 import { Button } from '@/shared/components/Button'
-import { Section } from '@/shared/components/Surfaces'
+import { EmptyState, Section } from '@/shared/components/Surfaces'
 import type { Memory, MemoryCategory } from '@/store/useMemoriesStore'
 import {
   MEMORY_CATEGORIES,
@@ -176,11 +176,11 @@ export function MemoriesView() {
       </div>
 
       {visible.length === 0 ? (
-        <p className={styles.empty}>
+        <EmptyState icon={memories.length === 0 ? 'edit' : 'search'}>
           {memories.length === 0
             ? 'Todavía no hay nada anotado. El primer recuerdo suele ser una deuda.'
             : 'Ningún recuerdo coincide con ese filtro.'}
-        </p>
+        </EmptyState>
       ) : (
         <div className={styles.list}>
           {visible.map((memory) => (

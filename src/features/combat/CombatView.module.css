@@ -1,0 +1,42 @@
+/**
+ * On a wide screen the console becomes a two-column dashboard: the planner and
+ * the resources take the main column, while the state a player checks
+ * constantly — hit points, the turn, rests, the log — sits in a sidebar that
+ * stays put while the main column scrolls.
+ */
+.layout {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.main,
+.side {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    align-items: start;
+  }
+
+  .side {
+    position: sticky;
+    /* Clears the sticky tab strip and vitals row above it. */
+    top: 9.5rem;
+    max-height: calc(100dvh - 11rem);
+    overflow-y: auto;
+    padding-right: var(--space-1);
+  }
+}
+
+/* Sections carry their own bottom margin for the stacked views; inside these
+   grids the gap already does that job. */
+.main > *,
+.side > * {
+  margin-bottom: 0;
+}

@@ -1,9 +1,9 @@
+/* No inner scroll: on a wide screen this sits inside a scrolling sidebar, and
+   nesting two scroll areas makes both harder to use. The log is capped at 50
+   entries by the store, so it stays a finite list. */
 .list {
   display: grid;
   gap: var(--space-2);
-  max-height: 24rem;
-  overflow-y: auto;
-  padding-right: var(--space-1);
 }
 
 .entry {
@@ -21,7 +21,6 @@
 }
 
 .entry:hover {
-  transform: translateX(2px);
   border-color: var(--border-strong);
 }
 

@@ -26,8 +26,8 @@
 }
 
 .ability:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
 }
 
 .abilityName {
@@ -145,13 +145,12 @@
 }
 
 .row:hover {
-  background: var(--accent-quiet);
+  background: var(--surface-hover);
   color: var(--text);
-  transform: translateX(2px);
 }
 
 .row:active {
-  transform: translateX(0) scale(0.99);
+  transform: scale(0.99);
 }
 
 /* The proficiency dot, filled exactly as it is on a printed sheet. */
