@@ -5,9 +5,7 @@
   align-items: center;
 }
 
-.rowTight {
-  gap: var(--space-1);
-}
+/* ---- Hit points ---- */
 
 .hitPoints {
   display: flex;
@@ -17,26 +15,37 @@
 }
 
 .hitPointsValue {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
+  font-family: var(--font);
   font-weight: 900;
-  font-size: 3rem;
+  font-size: var(--text-3xl);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  transition: color var(--dur-base) var(--ease-out);
 }
 
 .hitPointsMax {
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  color: var(--color-dimmer);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-faint);
 }
 
 .bloodied {
-  color: var(--color-sulfur);
+  color: var(--gold);
 }
 
 .critical,
 .down {
-  color: var(--color-ember);
+  color: var(--accent);
+  animation: shake var(--dur-slow) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .critical,
+  .down {
+    animation: none;
+  }
 }
 
 .customDamage {
@@ -49,56 +58,76 @@
 
 .numberInput {
   inline-size: 4.5rem;
-  background: var(--color-pit);
-  border: 1px solid var(--color-line);
-  color: var(--color-bone);
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
+  background: var(--surface-inset);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
   padding: var(--space-2);
+  transition: border-color var(--dur-fast) var(--ease-out);
 }
+
+.numberInput:focus {
+  border-color: var(--accent);
+}
+
+/* ---- Death saves ---- */
 
 .deathSaves {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: center;
   margin-top: var(--space-4);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-line-soft);
+  padding-top: var(--space-4);
+  border-top: 2px dashed var(--border);
+  animation: rise-in var(--dur-base) var(--ease-out) both;
 }
 
 .deathSaveGroup {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.14em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dimmer);
+  color: var(--text-faint);
 }
 
 .deathDot {
-  inline-size: 0.75rem;
-  block-size: 0.75rem;
+  inline-size: 0.85rem;
+  block-size: 0.85rem;
   border-radius: 50%;
-  border: 1px solid var(--color-dimmer);
+  border: 2px solid var(--border-strong);
+  transition: all var(--dur-fast) var(--ease-spring);
 }
 
 .deathDotSuccess {
-  background: var(--color-verdigris);
-  border-color: var(--color-verdigris);
+  background: var(--success);
+  border-color: var(--success);
+  transform: scale(1.12);
 }
 
 .deathDotFailure {
-  background: var(--color-blood);
-  border-color: var(--color-blood);
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.12);
 }
+
+/* ---- Resources ---- */
 
 .resourceStack {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
+
+/* ---- Effects ---- */
 
 .effectList {
   display: grid;
@@ -110,159 +139,182 @@
   gap: var(--space-3);
   align-items: flex-start;
   justify-content: space-between;
-  border: 1px solid var(--color-line);
-  background: var(--color-panel);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
   padding: var(--space-3);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring);
+}
+
+.effectRow:hover {
+  transform: translateX(2px);
+}
+
+/* The toggle keeps its width; only the description reflows. */
+.effectRow > button {
+  flex-shrink: 0;
 }
 
 .effectActive {
-  border-color: rgb(163 119 221 / 55%);
-  background: rgb(163 119 221 / 10%);
+  border-color: var(--arcane);
+  background: var(--arcane-quiet);
 }
 
 .effectName {
-  font-family: var(--font-mono);
+  font-family: var(--font);
   font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .effectDescription {
-  font-size: var(--text-base);
-  color: var(--color-dim);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
   margin-top: var(--space-1);
 }
 
 .effectDuration {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-dimmer);
-  letter-spacing: 0.1em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: var(--space-1);
 }
+
+/* ---- Turn planner ---- */
 
 .situations {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-3);
 }
 
 .situation {
+  position: relative;
+  overflow: hidden;
   appearance: none;
   cursor: pointer;
   text-align: left;
-  background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  color: var(--color-bone);
-  font-family: var(--font-body);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  font-family: var(--font);
   font-size: var(--text-base);
-  padding: var(--space-3);
+  font-weight: 600;
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  animation: rise-in var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--stagger-index, 0) * 35ms);
   transition:
-    border-color var(--transition-fast),
-    background var(--transition-fast);
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring),
+    box-shadow var(--dur-base) var(--ease-out);
 }
 
 .situation:hover {
-  border-color: var(--color-dim);
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  box-shadow: var(--shadow-lg);
 }
 
 .situation[aria-pressed='true'] {
-  border-color: var(--color-ember);
-  background: var(--color-panel-raised);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-accent);
+}
+
+/* A crimson wash slides up behind the selected card. */
+.situation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--accent-quiet);
+  transform: translateY(100%);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.situation[aria-pressed='true']::before {
+  transform: none;
 }
 
 .situationCategory {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.18em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dimmer);
+  color: var(--accent);
   margin-bottom: var(--space-1);
 }
 
 .answer {
-  border: 1px solid var(--color-line);
-  border-left: 2px solid var(--color-ember);
-  background: var(--color-panel);
-  padding: var(--space-4);
-  margin-top: var(--space-3);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: var(--space-5);
+  margin-top: var(--space-4);
+  box-shadow: var(--shadow-lg);
+  animation: rise-in var(--dur-base) var(--ease-out) both;
 }
 
 .answerTitle {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: var(--space-3);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-4);
+  color: var(--text);
 }
 
 .sequence {
   display: grid;
   grid-template-columns: minmax(7rem, auto) 1fr;
-  gap: var(--space-2) var(--space-4);
-  margin: 0;
+  gap: var(--space-3) var(--space-4);
 }
 
 .sequenceTerm {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.16em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dimmer);
-  padding-top: 0.2rem;
+  color: var(--text-faint);
+  padding-top: 0.15rem;
 }
 
 .sequenceDetail {
-  margin: 0;
   font-size: var(--text-base);
+  color: var(--text);
 }
 
 .cost {
   display: inline-block;
-  margin-top: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.12em;
+  margin-top: var(--space-4);
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-sulfur);
-  border: 1px solid rgb(239 171 68 / 35%);
-  padding: var(--space-1) var(--space-2);
+  color: var(--gold);
+  background: var(--gold-quiet);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
 }
 
 .note {
-  font-size: var(--text-base);
-  color: var(--color-dim);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
   margin-top: var(--space-3);
 }
 
-.die {
-  inline-size: 5rem;
-  block-size: 5rem;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  color: var(--color-bone);
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
-  font-weight: 900;
-  font-size: 2rem;
-  transition:
-    border-color var(--transition-fast),
-    background var(--transition-fast);
-}
-
-.die:hover {
-  border-color: var(--color-surge);
-}
-
-.dieHit {
-  border-color: var(--color-surge);
-  background: rgb(163 119 221 / 20%);
-  color: var(--color-surge);
-}
+/* ---- Wild magic ---- */
 
 .wildMagic {
   display: flex;
@@ -271,18 +323,55 @@
   flex-wrap: wrap;
 }
 
+.die {
+  position: relative;
+  inline-size: 5.5rem;
+  block-size: 5.5rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: var(--surface-raised);
+  border: 3px solid var(--arcane);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 900;
+  font-size: var(--text-2xl);
+  font-variant-numeric: tabular-nums;
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.die:hover {
+  transform: rotate(-6deg) scale(1.05);
+  box-shadow: 0 12px 28px -12px color-mix(in srgb, var(--arcane) 70%, transparent);
+}
+
+.die:active {
+  transform: scale(0.94);
+}
+
+.dieHit {
+  background: var(--arcane);
+  border-color: var(--arcane);
+  animation: land var(--dur-slow) var(--ease-spring);
+}
+
 .wildMagicBody {
-  flex: 1 1 15rem;
+  flex: 1 1 16rem;
 }
 
 .wildMagicHeadline {
-  font-family: var(--font-mono);
+  font-family: var(--font);
   font-size: var(--text-sm);
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dim);
+  color: var(--text-muted);
 }
 
 .wildMagicHit {
-  color: var(--color-surge);
+  color: var(--arcane);
 }

@@ -8,7 +8,9 @@ import { MemoriesView } from '@/features/memories/MemoriesView'
 import { SheetView } from '@/features/sheet/SheetView'
 import { SpellsView } from '@/features/spells/SpellsView'
 import { VitalsBar } from '@/features/vitals/VitalsBar'
+import { Icon } from '@/shared/components/Icon'
 import { useHashTab } from '@/shared/hooks/useHashTab'
+import { useTheme } from '@/shared/hooks/useTheme'
 import { useActiveCharacter } from '@/store/selectors'
 import { useCampaignStore } from '@/store/useCampaignStore'
 import styles from './App.module.css'
@@ -31,9 +33,12 @@ export function App() {
   const selectCharacter = useCampaignStore((state) => state.selectCharacter)
   const [tab, setTab] = useHashTab<TabId>(TABS, 'combate')
   const [isSurging, setSurging] = useState(false)
+  const { theme, toggleTheme } = useTheme()
   const canPersist = usePersistenceCheck()
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const tabStripRef = useRef<HTMLDivElement | null>(null)
+  const hasMounted = useRef(false)
 
   const flashSurge = useCallback(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -47,6 +52,34 @@ export function App() {
       window.clearTimeout(timer)
     }
   }, [isSurging])
+
+  /**
+   * On a narrow screen the tab strip scrolls sideways; centre the active tab so
+   * the player can always see where they are.
+   *
+   * The strip is scrolled directly rather than through `scrollIntoView`, which
+   * would also scroll the page vertically as a side effect.
+   */
+  useEffect(() => {
+    const strip = tabStripRef.current
+    const activeTab = tabRefs.current[TABS.indexOf(tab)]
+    if (!strip || !activeTab) return
+
+    const centred = activeTab.offsetLeft - (strip.clientWidth - activeTab.clientWidth) / 2
+    strip.scrollTo({ left: Math.max(0, centred), behavior: 'smooth' })
+  }, [tab])
+
+  /**
+   * Switching tabs starts a new page, so it starts at the top. Skipped on the
+   * first render, where the browser is still restoring its own scroll position.
+   */
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true
+      return
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [tab])
 
   /**
    * Arrow keys walk the tab strip and wrap around, so it is never a dead end
@@ -65,20 +98,31 @@ export function App() {
     tabRefs.current[TABS.indexOf(next)]?.focus()
   }
 
+  const summary = [
+    `${character.className} ${character.level}`,
+    character.subclass,
+    character.species,
+    character.background,
+    character.alignment,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <p className={styles.kicker}>Consola de mesa · D&amp;D 2024</p>
-        <h1 className={styles.title}>{character.name}</h1>
-        <p className={styles.subtitle}>
-          {character.className} {character.level}
-          {character.subclass ? ` · ${character.subclass}` : ''} · {character.species} ·{' '}
-          {character.background}
-          {character.alignment ? ` · ${character.alignment}` : ''}
-        </p>
+        <div className={styles.identity}>
+          <span className={styles.crest} aria-hidden="true">
+            {character.name.charAt(0)}
+          </span>
+          <div className={styles.identityText}>
+            <h1 className={styles.title}>{character.name}</h1>
+            <p className={styles.subtitle}>{summary}</p>
+          </div>
+        </div>
 
-        <div className={styles.characterPicker}>
-          <label className={styles.kicker} htmlFor="character-select">
+        <div className={styles.headerControls}>
+          <label className={styles.pickerLabel} htmlFor="character-select">
             Personaje activo
           </label>
           <select
@@ -93,40 +137,54 @@ export function App() {
               </option>
             ))}
           </select>
+
+          <button
+            type="button"
+            className={styles.iconButton}
+            aria-label={theme === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro'}
+            onClick={toggleTheme}
+          >
+            <Icon name={theme === 'light' ? 'moon' : 'sun'} size={18} />
+          </button>
         </div>
       </header>
 
-      <VitalsBar />
+      {/* Tabs and vitals stick together as one unit: two independent sticky
+          elements would swap places as soon as the page scrolled. */}
+      <div className={styles.stickyHeader}>
+        <div
+          ref={tabStripRef}
+          className={styles.tabs}
+          role="tablist"
+          aria-label="Secciones de la consola"
+          onKeyDown={handleTabKeys}
+        >
+          {TABS.map((id, index) => {
+            const isActive = id === tab
+            return (
+              <button
+                key={id}
+                ref={(element) => {
+                  tabRefs.current[index] = element
+                }}
+                type="button"
+                role="tab"
+                id={`tab-${id}`}
+                aria-controls={`panel-${id}`}
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
+                className={[styles.tab, isActive ? styles.tabActive : undefined]
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={() => setTab(id)}
+              >
+                {TAB_LABEL[id]}
+              </button>
+            )
+          })}
+        </div>
 
-      <div
-        className={styles.tabs}
-        role="tablist"
-        aria-label="Secciones de la consola"
-        onKeyDown={handleTabKeys}
-      >
-        {TABS.map((id, index) => {
-          const isActive = id === tab
-          return (
-            <button
-              key={id}
-              ref={(element) => {
-                tabRefs.current[index] = element
-              }}
-              type="button"
-              role="tab"
-              id={`tab-${id}`}
-              aria-controls={`panel-${id}`}
-              aria-selected={isActive}
-              tabIndex={isActive ? 0 : -1}
-              className={[styles.tab, isActive ? styles.tabActive : undefined]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setTab(id)}
-            >
-              {TAB_LABEL[id]}
-            </button>
-          )
-        })}
+        <VitalsBar />
       </div>
 
       {!canPersist ? (
@@ -137,6 +195,7 @@ export function App() {
       ) : null}
 
       <main
+        key={tab}
         className={styles.view}
         role="tabpanel"
         id={`panel-${tab}`}

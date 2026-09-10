@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ABILITY_LABEL, SKILL_LABEL } from '@/content/labels'
+import type { CSSProperties } from 'react'
+import { ABILITY_LABEL, ABILITY_SHORT_LABEL, SKILL_LABEL } from '@/content/labels'
 import {
   abilityModifierOf,
   carryingCapacity,
@@ -10,23 +11,29 @@ import {
   skillModifier,
   totalCarriedWeight,
 } from '@/domain/character/derived'
-import type { AbilityId, Currency, SkillId } from '@/domain/character/types'
-import { ABILITY_IDS, SKILL_IDS } from '@/domain/character/types'
+import type { Currency } from '@/domain/character/types'
+import { ABILITY_IDS, SKILL_ABILITY, SKILL_IDS } from '@/domain/character/types'
 import { formatModifier } from '@/domain/dice/dice'
 import type { D20RollResult } from '@/domain/dice/dice'
-import { Card, Eyebrow, Grid, Section, StatTile } from '@/shared/components/Surfaces'
+import { Card, Grid, Section, StatTile } from '@/shared/components/Surfaces'
 import { useActiveCharacter, useCombatStats } from '@/store/selectors'
 import { useCampaignStore } from '@/store/useCampaignStore'
 import styles from './Sheet.module.css'
 
-/** Coin abbreviations, biggest coin first. Keyed off `Currency`, never a loose string. */
-const CURRENCY_LABELS: readonly (readonly [keyof Currency, string])[] = [
-  ['platinum', 'PPT'],
-  ['gold', 'PO'],
-  ['electrum', 'PE'],
-  ['silver', 'PP'],
-  ['copper', 'PC'],
+const CURRENCY: { key: keyof Currency; label: string }[] = [
+  { key: 'platinum', label: 'PPT' },
+  { key: 'gold', label: 'PO' },
+  { key: 'electrum', label: 'PE' },
+  { key: 'silver', label: 'PP' },
+  { key: 'copper', label: 'PC' },
 ]
+
+interface RollReadout {
+  label: string
+  result: D20RollResult
+  /** Increments per roll so the readout replays its landing animation. */
+  sequence: number
+}
 
 /** The full character sheet: scores, skills, features, gear and money. */
 export function SheetView() {
@@ -34,16 +41,158 @@ export function SheetView() {
   const stats = useCombatStats()
   const rollCheck = useCampaignStore((state) => state.rollCheck)
 
-  const [lastRoll, setLastRoll] = useState<{ label: string; result: D20RollResult } | null>(null)
+  const [lastRoll, setLastRoll] = useState<RollReadout | null>(null)
 
   const roll = (label: string, modifier: number) => {
-    setLastRoll({ label, result: rollCheck(label, modifier, 'normal') })
+    setLastRoll((previous) => ({
+      label,
+      result: rollCheck(label, modifier, 'normal'),
+      sequence: (previous?.sequence ?? 0) + 1,
+    }))
   }
 
   const carried = totalCarriedWeight(character)
+  const sortedSkills = [...SKILL_IDS].sort((left, right) =>
+    SKILL_LABEL[left].localeCompare(SKILL_LABEL[right], 'es'),
+  )
 
   return (
     <>
+      <Section heading="Características" lede="Toca cualquier fila para tirarla.">
+        <div className={styles.abilityGrid}>
+          {ABILITY_IDS.map((ability, index) => (
+            <div
+              key={ability}
+              className={styles.ability}
+              style={{ '--stagger-index': index } as CSSProperties}
+            >
+              <span className={styles.abilityName}>{ABILITY_LABEL[ability]}</span>
+              <span className={styles.abilityModifier}>
+                {formatModifier(abilityModifierOf(character, ability))}
+              </span>
+              <span className={styles.abilityScore}>{character.abilities[ability]}</span>
+            </div>
+          ))}
+        </div>
+
+        <Grid>
+          <div className={styles.panel}>
+            <h3 className={styles.panelHeading}>Tiradas de salvación</h3>
+            <div className={styles.saveGrid}>
+              {ABILITY_IDS.map((ability) => {
+                const proficient = isSavingThrowProficient(character, ability)
+                const modifier = savingThrowModifier(character, ability)
+
+                return (
+                  <button
+                    key={ability}
+                    type="button"
+                    className={[styles.row, proficient ? styles.rowProficient : undefined]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => roll(`Salvación de ${ABILITY_LABEL[ability]}`, modifier)}
+                  >
+                    <span
+                      className={[styles.dot, proficient ? styles.dotFilled : undefined]
+                        .filter(Boolean)
+                        .join(' ')}
+                    />
+                    <span className={styles.rowName}>{ABILITY_SHORT_LABEL[ability]}</span>
+                    <span className={styles.rowValue}>{formatModifier(modifier)}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className={styles.passiveRow} style={{ marginTop: 'var(--space-4)' }}>
+              <PassiveScore
+                label="Percepción pasiva"
+                value={passiveSkillScore(character, 'perception')}
+              />
+              <PassiveScore
+                label="Perspicacia pasiva"
+                value={passiveSkillScore(character, 'insight')}
+              />
+              <PassiveScore
+                label="Investigación pasiva"
+                value={passiveSkillScore(character, 'investigation')}
+              />
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <h3 className={styles.panelHeading}>Habilidades</h3>
+            <div className={styles.skillGrid}>
+              {sortedSkills.map((skill) => {
+                const proficiency = character.skillProficiencies[skill] ?? 'none'
+                const modifier = skillModifier(character, skill)
+
+                return (
+                  <button
+                    key={skill}
+                    type="button"
+                    className={[
+                      styles.row,
+                      proficiency !== 'none' ? styles.rowProficient : undefined,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => roll(SKILL_LABEL[skill], modifier)}
+                  >
+                    <span
+                      className={[
+                        styles.dot,
+                        proficiency === 'proficient' ? styles.dotFilled : undefined,
+                        proficiency === 'expertise' ? styles.dotExpertise : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    />
+                    <span className={styles.rowAbility}>
+                      {ABILITY_SHORT_LABEL[SKILL_ABILITY[skill]]}
+                    </span>
+                    <span className={styles.rowName}>{SKILL_LABEL[skill]}</span>
+                    <span className={styles.rowValue}>{formatModifier(modifier)}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </Grid>
+
+        <p className={styles.rollResult} aria-live="polite">
+          {lastRoll ? (
+            <>
+              <span
+                key={lastRoll.sequence}
+                className={[
+                  styles.rollTotal,
+                  'landing',
+                  lastRoll.result.isCriticalHit ? styles.critical : undefined,
+                  lastRoll.result.isCriticalMiss ? styles.fumble : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {lastRoll.result.total}
+              </span>
+              <span>
+                <strong>{lastRoll.label}</strong> · d20 {lastRoll.result.natural}{' '}
+                {formatModifier(lastRoll.result.modifier)}
+              </span>
+              {lastRoll.result.isCriticalHit ? (
+                <span className={styles.critical}>¡20 natural!</span>
+              ) : null}
+              {lastRoll.result.isCriticalMiss ? (
+                <span className={styles.fumble}>1 natural</span>
+              ) : null}
+            </>
+          ) : (
+            'Ninguna tirada todavía.'
+          )}
+        </p>
+      </Section>
+
       <Section heading="Resumen">
         <Grid density="narrow">
           <StatTile
@@ -57,11 +206,7 @@ export function SheetView() {
           <StatTile label="Iniciativa" value={formatModifier(stats.initiative)} />
           <StatTile label="Velocidad" value={`${character.speed} pies`} />
           <StatTile label="Competencia" value={formatModifier(character.proficiencyBonus)} />
-          <StatTile
-            label="Percepción pasiva"
-            value={passiveSkillScore(character, 'perception')}
-            hint={`Perspicacia ${passiveSkillScore(character, 'insight')} · Investigación ${passiveSkillScore(character, 'investigation')}`}
-          />
+          <StatTile label="Concentración" value={formatModifier(stats.concentration)} />
           <StatTile
             label="Dados de golpe"
             value={`${character.hitDice.count}d${character.hitDice.sides}`}
@@ -69,64 +214,18 @@ export function SheetView() {
         </Grid>
       </Section>
 
-      <Section
-        heading="Características y salvaciones"
-        lede="Toca una salvación o una habilidad para tirarla."
-      >
-        <div className={styles.abilityGrid}>
-          {ABILITY_IDS.map((ability) => (
-            <AbilityCard key={ability} ability={ability} onRoll={roll} />
-          ))}
-        </div>
-
-        <Eyebrow>Habilidades</Eyebrow>
-        <div className={styles.skillGrid}>
-          {[...SKILL_IDS]
-            .sort((left, right) => skillModifier(character, right) - skillModifier(character, left))
-            .map((skill) => (
-              <SkillButton key={skill} skill={skill} onRoll={roll} />
-            ))}
-        </div>
-
-        <p className={styles.rollResult} aria-live="polite">
-          {lastRoll ? (
-            <>
-              <span
-                className={[
-                  styles.rollTotal,
-                  lastRoll.result.isCriticalHit ? styles.critical : undefined,
-                  lastRoll.result.isCriticalMiss ? styles.fumble : undefined,
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
-                {lastRoll.result.total}
-              </span>
-              <span>
-                {lastRoll.label} · d20 {lastRoll.result.natural}{' '}
-                {formatModifier(lastRoll.result.modifier)}
-              </span>
-              {lastRoll.result.isCriticalHit ? (
-                <span className={styles.critical}>¡20 natural!</span>
-              ) : null}
-              {lastRoll.result.isCriticalMiss ? (
-                <span className={styles.fumble}>1 natural</span>
-              ) : null}
-            </>
-          ) : null}
-        </p>
-      </Section>
-
       <Section heading="Rasgos y dotes">
         <Grid>
-          {character.features.map((feature) => (
-            <Card key={feature.id}>
-              <p className={styles.featureName}>
-                {feature.name}
-                <span className={styles.featureSource}>{feature.source}</span>
-              </p>
-              <p className={styles.featureBody}>{feature.description}</p>
-            </Card>
+          {character.features.map((feature, index) => (
+            <div key={feature.id} style={{ '--stagger-index': index } as CSSProperties}>
+              <Card className="stagger">
+                <p className={styles.featureName}>
+                  {feature.name}
+                  <span className={styles.featureSource}>{feature.source}</span>
+                </p>
+                <p className={styles.featureBody}>{feature.description}</p>
+              </Card>
+            </div>
           ))}
         </Grid>
       </Section>
@@ -170,35 +269,30 @@ export function SheetView() {
           </Card>
 
           <Card title="Monedas, idiomas y competencias">
-            <p className={styles.currency}>
-              {CURRENCY_LABELS.map(([key, label]) => (
-                <span key={key}>
-                  {label} <span className={styles.currencyValue}>{character.currency[key]}</span>
+            <div className={styles.currency}>
+              {CURRENCY.map(({ key, label }) => (
+                <span key={label} className={styles.coin}>
+                  {label} <span className={styles.coinValue}>{character.currency[key]}</span>
                 </span>
               ))}
-            </p>
+            </div>
 
-            <Eyebrow>Idiomas</Eyebrow>
-            <p className={styles.inlineList}>{character.languages.join(' · ')}</p>
-
-            <Eyebrow>Competencias</Eyebrow>
             <p className={styles.inlineList}>
-              Armaduras: {character.proficiencies.armor.join(', ')}
+              <strong>Idiomas.</strong> {character.languages.join(' · ')}
               <br />
-              Armas: {character.proficiencies.weapons.join(', ')}
+              <strong>Armaduras.</strong> {character.proficiencies.armor.join(', ')}
               <br />
-              Herramientas: {character.proficiencies.tools.join(', ')}
+              <strong>Armas.</strong> {character.proficiencies.weapons.join(', ')}
+              <br />
+              <strong>Herramientas.</strong> {character.proficiencies.tools.join(', ')}
             </p>
 
             {character.notes && character.notes.length > 0 ? (
-              <>
-                <Eyebrow>Notas de la hoja</Eyebrow>
-                <ul className={styles.inlineList}>
-                  {character.notes.map((note) => (
-                    <li key={note}>· {note}</li>
-                  ))}
-                </ul>
-              </>
+              <ul className={styles.inlineList} style={{ marginTop: 'var(--space-3)' }}>
+                {character.notes.map((note) => (
+                  <li key={note}>· {note}</li>
+                ))}
+              </ul>
             ) : null}
           </Card>
         </Grid>
@@ -207,61 +301,11 @@ export function SheetView() {
   )
 }
 
-function AbilityCard({
-  ability,
-  onRoll,
-}: {
-  ability: AbilityId
-  onRoll: (label: string, modifier: number) => void
-}) {
-  const character = useActiveCharacter()
-  const modifier = abilityModifierOf(character, ability)
-  const save = savingThrowModifier(character, ability)
-  const proficient = isSavingThrowProficient(character, ability)
-
+function PassiveScore({ label, value }: { label: string; value: number }) {
   return (
-    <div className={styles.ability}>
-      <p className={styles.abilityName}>{ABILITY_LABEL[ability]}</p>
-      <p className={styles.abilityScore}>
-        {character.abilities[ability]}
-        <span className={styles.abilityModifier}>{formatModifier(modifier)}</span>
-      </p>
-      <button
-        type="button"
-        className={[styles.skill, proficient ? styles.skillProficient : undefined]
-          .filter(Boolean)
-          .join(' ')}
-        style={{ marginTop: 'var(--space-2)', width: '100%' }}
-        onClick={() => onRoll(`Salvación de ${ABILITY_LABEL[ability]}`, save)}
-      >
-        <span>Salvación</span>
-        <span className={styles.skillValue}>{formatModifier(save)}</span>
-      </button>
-    </div>
-  )
-}
-
-function SkillButton({
-  skill,
-  onRoll,
-}: {
-  skill: SkillId
-  onRoll: (label: string, modifier: number) => void
-}) {
-  const character = useActiveCharacter()
-  const modifier = skillModifier(character, skill)
-  const proficient = (character.skillProficiencies[skill] ?? 'none') !== 'none'
-
-  return (
-    <button
-      type="button"
-      className={[styles.skill, proficient ? styles.skillProficient : undefined]
-        .filter(Boolean)
-        .join(' ')}
-      onClick={() => onRoll(SKILL_LABEL[skill], modifier)}
-    >
-      <span>{SKILL_LABEL[skill]}</span>
-      <span className={styles.skillValue}>{formatModifier(modifier)}</span>
-    </button>
+    <span className={styles.passive}>
+      <span className={styles.passiveValue}>{value}</span>
+      <span className={styles.passiveLabel}>{label}</span>
+    </span>
   )
 }

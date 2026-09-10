@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { useActiveCharacter } from '@/store/selectors'
 import styles from './Combat.module.css'
 
@@ -17,11 +18,12 @@ export function TurnPlanner() {
   return (
     <>
       <div className={styles.situations}>
-        {character.tactics.map((play) => (
+        {character.tactics.map((play, index) => (
           <button
             key={play.id}
             type="button"
             className={styles.situation}
+            style={{ '--stagger-index': index } as CSSProperties}
             aria-pressed={play.id === selectedId}
             onClick={() => setSelectedId(play.id === selectedId ? null : play.id)}
           >

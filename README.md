@@ -99,6 +99,24 @@ confirmación porque reemplaza todo.
 **Sin `dangerouslySetInnerHTML`.** El único formato que necesita el contenido es `**énfasis**`,
 y `RichText` lo renderiza como nodos de React.
 
+## Sistema visual
+
+Oscuro por defecto —es una consola que se usa horas en una mesa, a menudo con poca luz— con
+tema claro disponible y recordado entre sesiones.
+
+- **Un solo acento.** Carmesí para lo primario; ámbar, arcano, verde y rojo solo cuando
+  significan algo (aviso, magia, éxito, peligro). Nada de bordear cada tarjeta de color.
+- **Una sola familia.** Plus Jakarta Sans; la jerarquía la hace el peso, no seis tipografías.
+  Todos los números van en cifras tabulares para que se puedan comparar en columna.
+- **Densidad de panel de control.** Escala de espaciado corta y uniforme: caben muchos números
+  sin scroll.
+- **Iconos SVG**, nunca emojis: los emojis cambian de forma en cada plataforma y traen su propio
+  color, que rompe los dos temas.
+- **Movimiento con sentido.** Entradas escalonadas de 240 ms con `back.out`, respuesta al pulsar
+  y el destello de la oleada. Todo respeta `prefers-reduced-motion`.
+- **Accesibilidad.** Contraste AA en ambos temas, foco visible, `role="tablist"` con navegación
+  por flechas y objetivos táctiles cómodos.
+
 ---
 
 ## Añadir un personaje

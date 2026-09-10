@@ -3,15 +3,17 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) 0;
 }
 
 .label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.16em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dimmer);
-  min-width: 5.5rem;
+  color: var(--text-faint);
+  min-width: 5rem;
 }
 
 .pips {
@@ -21,53 +23,79 @@
 }
 
 .pip {
-  inline-size: 1.125rem;
-  block-size: 1.125rem;
+  position: relative;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
   padding: 0;
   cursor: pointer;
-  background: transparent;
-  border: 1px solid var(--color-dimmer);
-  transform: rotate(45deg);
+  background: var(--surface-inset);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast);
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
 }
 
 .pip:hover {
-  border-color: var(--color-bone);
+  border-color: var(--accent);
+  transform: scale(1.12);
 }
 
+.pip:active {
+  transform: scale(0.92);
+  transition-duration: var(--dur-instant);
+}
+
+/* ---- Filled states ---- */
+
 .available {
-  background: var(--color-bone);
-  border-color: var(--color-bone);
+  background: var(--accent);
+  border-color: var(--accent);
+  animation: pop-in var(--dur-fast) var(--ease-spring);
 }
 
 .availableSurge {
-  background: var(--color-surge);
-  border-color: var(--color-surge);
+  background: var(--arcane);
+  border-color: var(--arcane);
+  animation: pop-in var(--dur-fast) var(--ease-spring);
 }
 
 .availableEmber {
-  background: var(--color-sulfur);
-  border-color: var(--color-sulfur);
+  background: var(--gold);
+  border-color: var(--gold);
+  animation: pop-in var(--dur-fast) var(--ease-spring);
 }
 
 .availableVerdigris {
-  background: var(--color-verdigris);
-  border-color: var(--color-verdigris);
+  background: var(--success);
+  border-color: var(--success);
+  animation: pop-in var(--dur-fast) var(--ease-spring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .available,
+  .availableSurge,
+  .availableEmber,
+  .availableVerdigris {
+    animation: none;
+  }
+}
+
+/* Slots conjured with Font of Magic are outlined, marking them as temporary. */
+.conjured {
+  border-style: dashed;
+  border-color: var(--arcane);
+  background: var(--arcane-quiet);
+  cursor: default;
 }
 
 .count {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-dim);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
   margin-inline-start: auto;
   white-space: nowrap;
-}
-
-/* Conjured slots read as outlined, to mark that they vanish on a long rest. */
-.conjured {
-  border-style: dashed;
-  border-color: var(--color-surge);
-  background: rgb(163 119 221 / 30%);
 }

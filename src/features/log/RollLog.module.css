@@ -1,27 +1,39 @@
 .list {
   display: grid;
   gap: var(--space-2);
-  max-height: 22rem;
+  max-height: 24rem;
   overflow-y: auto;
+  padding-right: var(--space-1);
 }
 
 .entry {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
-  border: 1px solid var(--color-line-soft);
-  background: var(--color-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
   padding: var(--space-2) var(--space-3);
+  animation: rise-in var(--dur-fast) var(--ease-out) both;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.entry:hover {
+  transform: translateX(2px);
+  border-color: var(--border-strong);
 }
 
 .value {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
-  font-weight: 900;
-  font-size: 1.5rem;
-  line-height: 1;
+  flex: 0 0 auto;
   min-inline-size: 2.5rem;
-  text-align: right;
+  text-align: center;
+  font-family: var(--font);
+  font-weight: 900;
+  font-size: var(--text-lg);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .body {
@@ -30,56 +42,61 @@
 }
 
 .title {
-  font-family: var(--font-mono);
+  font-family: var(--font);
   font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .detail {
-  font-size: var(--text-base);
-  color: var(--color-dim);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
 }
 
 .time {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-dimmer);
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-faint);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Tones ---- */
+
+.neutral {
+  border-left: 3px solid var(--border-strong);
 }
 
 .good {
-  border-left: 2px solid var(--color-verdigris);
+  border-left: 3px solid var(--success);
 }
 
 .good .value {
-  color: var(--color-verdigris);
+  color: var(--success);
 }
 
 .bad {
-  border-left: 2px solid var(--color-blood);
+  border-left: 3px solid var(--accent);
 }
 
 .bad .value {
-  color: #d98a92;
+  color: var(--accent);
 }
 
 .chaos {
-  border-left: 2px solid var(--color-surge);
+  border-left: 3px solid var(--arcane);
+  background: var(--arcane-quiet);
 }
 
 .chaos .value {
-  color: var(--color-surge);
+  color: var(--arcane);
 }
 
 .fire {
-  border-left: 2px solid var(--color-ember);
+  border-left: 3px solid var(--gold);
 }
 
 .fire .value {
-  color: var(--color-sulfur);
-}
-
-.neutral {
-  border-left: 2px solid var(--color-line);
+  color: var(--gold);
 }

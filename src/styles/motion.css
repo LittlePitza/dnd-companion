@@ -1,0 +1,148 @@
+/**
+ * Shared keyframes and motion helpers.
+ *
+ * Rule of the house: motion explains a change, it never announces itself.
+ * Entrances are short and directional, feedback is a single beat, and every
+ * animated element is legible with animation disabled.
+ */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A rolled number lands: overshoot slightly, then settle. */
+@keyframes land {
+  0% {
+    opacity: 0;
+    transform: scale(0.72) translateY(0.25rem);
+  }
+
+  55% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: none;
+  }
+}
+
+/* A struck value recoils sideways. Used when hit points drop. */
+@keyframes shake {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  20% {
+    transform: translateX(-0.25rem);
+  }
+
+  40% {
+    transform: translateX(0.2rem);
+  }
+
+  60% {
+    transform: translateX(-0.12rem);
+  }
+
+  80% {
+    transform: translateX(0.06rem);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(200 16 46 / 45%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0.75rem rgb(200 16 46 / 0%);
+  }
+}
+
+@keyframes spin-die {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes surge-bloom {
+  0% {
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---- Helpers ---- */
+
+/**
+ * Staggered entrance for a list. The parent sets `--stagger-index` on each
+ * child through an inline style; children with no index simply start at zero.
+ */
+.stagger {
+  animation: rise-in var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--stagger-index, 0) * 40ms);
+}
+
+.landing {
+  animation: land var(--dur-base) var(--ease-spring) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger,
+  .landing {
+    animation: none;
+  }
+}

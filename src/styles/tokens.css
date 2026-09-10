@@ -1,63 +1,161 @@
 /**
- * Design tokens. Every colour, font and spacing step the interface uses is
- * declared once here; components reference the variables and never literals.
+ * Design tokens.
+ *
+ * Dark-first, because this is a console used at a table for hours, often in a
+ * dim room. The palette is cool graphite with a single confident accent
+ * (crimson) and amber as its support; every other colour is reserved for
+ * meaning — success, danger, arcane.
+ *
+ * Density follows dashboard conventions: tight, uniform spacing so a lot of
+ * numbers stay readable without scrolling.
  */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* ---- Surfaces ---- */
+  --bg: #0b0d10;
+  --surface: #14171c;
+  --surface-raised: #1b1f26;
+  --surface-hover: #21262e;
+  --surface-inset: #0f1216;
+
+  /* ---- Text ---- */
+  --text: #e8eaed;
+  --text-muted: #9aa1ac;
+  --text-faint: #6a717c;
+  --text-on-accent: #ffffff;
+
+  /* ---- Borders ---- */
+  --border: #262b33;
+  --border-strong: #353c46;
+
+  /* ---- Accents ---- */
+  --accent: #f04352;
+  --accent-hover: #ff5a68;
+  --accent-quiet: rgb(240 67 82 / 14%);
+  --accent-border: rgb(240 67 82 / 32%);
+
+  --gold: #e0a33e;
+  --gold-quiet: rgb(224 163 62 / 14%);
+  --gold-border: rgb(224 163 62 / 32%);
+
+  --arcane: #9b8afb;
+  --arcane-quiet: rgb(155 138 251 / 14%);
+  --arcane-border: rgb(155 138 251 / 32%);
+
+  --success: #34d399;
+  --success-quiet: rgb(52 211 153 / 14%);
+
+  --danger: #f0576b;
+  --danger-quiet: rgb(240 87 107 / 14%);
+
+  /* ---- Depth ---- */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 50%);
+  --shadow-lg: 0 16px 40px -12px rgb(0 0 0 / 65%);
+  --shadow-accent: 0 6px 20px -6px rgb(240 67 82 / 45%);
+
+  --ring: 0 0 0 3px rgb(240 67 82 / 30%);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* Cool near-white, not parchment: warm beige is what reads as dated. */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-hover: #f1f3f6;
+  --surface-inset: #eef0f4;
+
+  --text: #101418;
+  --text-muted: #5a626d;
+  --text-faint: #6b7280;
+  --text-on-accent: #ffffff;
+
+  --border: #e3e6eb;
+  --border-strong: #cdd2da;
+
+  --accent: #d92339;
+  --accent-hover: #b91c30;
+  --accent-quiet: rgb(217 35 57 / 8%);
+  --accent-border: rgb(217 35 57 / 24%);
+
+  --gold: #a86a12;
+  --gold-quiet: rgb(168 106 18 / 9%);
+  --gold-border: rgb(168 106 18 / 24%);
+
+  --arcane: #6d4df6;
+  --arcane-quiet: rgb(109 77 246 / 8%);
+  --arcane-border: rgb(109 77 246 / 24%);
+
+  --success: #0f9d63;
+  --success-quiet: rgb(15 157 99 / 10%);
+
+  --danger: #d92339;
+  --danger-quiet: rgb(217 35 57 / 8%);
+
+  --shadow-sm: 0 1px 2px rgb(16 20 24 / 6%);
+  --shadow-md: 0 4px 12px -2px rgb(16 20 24 / 10%);
+  --shadow-lg: 0 16px 40px -12px rgb(16 20 24 / 18%);
+  --shadow-accent: 0 6px 20px -6px rgb(217 35 57 / 35%);
+
+  --ring: 0 0 0 3px rgb(217 35 57 / 22%);
+}
+
 :root {
-  /* Surfaces */
-  --color-void: #15111b;
-  --color-pit: #0f0c14;
-  --color-panel: #1e1825;
-  --color-panel-raised: #271f30;
+  /* ---- Type: one geometric family, weight does the hierarchy ---- */
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Lines */
-  --color-line: #372e45;
-  --color-line-soft: #2a2333;
-
-  /* Text */
-  --color-bone: #efe8de;
-  --color-dim: #a99cb8;
-  --color-dimmer: #736786;
-
-  /* Accents */
-  --color-ember: #c8471f;
-  --color-sulfur: #efab44;
-  --color-surge: #a377dd;
-  --color-verdigris: #4fb8a4;
-  --color-blood: #8c2f39;
-
-  /* Type */
-  --font-display: 'Fraunces', 'Bodoni Moda', Georgia, serif;
-  --font-body: 'Newsreader', Georgia, serif;
-  --font-mono: 'Martian Mono', ui-monospace, 'SFMono-Regular', monospace;
-
-  --text-xs: 0.5625rem;
-  --text-sm: 0.6875rem;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
   --text-base: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.5rem;
-  --text-xl: 2rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --text-4xl: 3.5rem;
 
-  /* Space */
+  --tracking-tight: -0.02em;
+  --tracking-tighter: -0.035em;
+  --tracking-label: 0.06em;
+
+  /* ---- Space: dense dashboard scale ---- */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
-  --space-5: 1.375rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
+  --space-5: 1.25rem;
+  --space-6: 1.75rem;
+  --space-7: 2.5rem;
 
-  /* Motion */
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.24s cubic-bezier(0.2, 0.7, 0.3, 1);
+  /* ---- Shape ---- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-pill: 999px;
 
-  /* Layout */
-  --layout-max-width: 62rem;
-  --header-height: 2.5rem;
+  /* ---- Motion: 150-300ms, back.out for entrances ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --dur-instant: 90ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 400ms;
+
+  --layout-max-width: 82rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --transition-fast: 0.01ms;
-    --transition-base: 0.01ms;
+    --dur-instant: 1ms;
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
   }
 }

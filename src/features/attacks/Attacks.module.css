@@ -4,44 +4,94 @@
 }
 
 .attack {
-  border: 1px solid var(--color-line);
-  background: var(--color-panel);
-  padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-sm);
+  animation: rise-in var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--stagger-index, 0) * 40ms);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring);
+}
+
+.attack:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+/* A crimson spine marks the row as an attack. */
+.attack::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 4px;
+  background: var(--accent);
+  transform: scaleY(0.4);
+  transform-origin: center;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.attack:hover::before {
+  transform: none;
 }
 
 .header {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
+/* The to-hit bonus sits in a hexagon, the way a sheet prints it. */
 .bonus {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
-  font-weight: 900;
-  font-size: 1.75rem;
-  line-height: 1;
-  color: var(--color-sulfur);
-  min-inline-size: 2.75rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    background var(--dur-base) var(--ease-out);
+}
+
+.attack:hover .bonus {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
 }
 
 .name {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
-  font-weight: 700;
-  font-size: 1.125rem;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: var(--text-md);
   line-height: 1.2;
+  color: var(--text);
 }
 
 .english {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  color: var(--color-dimmer);
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 0.1rem;
 }
 
 .tags {
@@ -52,23 +102,28 @@
 }
 
 .tag {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.12em;
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-dim);
-  border: 1px solid var(--color-line);
+  color: var(--text-faint);
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
   padding: 0.1rem var(--space-2);
 }
 
 .tagAdvantage {
-  color: var(--color-surge);
-  border-color: rgb(163 119 221 / 55%);
+  color: var(--arcane);
+  background: var(--arcane-quiet);
+  border-color: color-mix(in srgb, var(--arcane) 35%, transparent);
 }
 
 .tagSlot {
-  color: var(--color-sulfur);
-  border-color: rgb(239 171 68 / 45%);
+  color: var(--gold);
+  background: var(--gold-quiet);
+  border-color: color-mix(in srgb, var(--gold) 35%, transparent);
 }
 
 .meta {
@@ -76,15 +131,15 @@
   gap: var(--space-4);
   flex-wrap: wrap;
   margin-top: var(--space-3);
-  font-family: var(--font-mono);
+  font-family: var(--font);
   font-size: var(--text-sm);
-  color: var(--color-dim);
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .notes {
-  font-size: var(--text-base);
-  color: var(--color-dimmer);
+  font-size: var(--text-sm);
+  color: var(--text-faint);
   margin-top: var(--space-2);
 }
 
@@ -92,35 +147,35 @@
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .result {
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-line-soft);
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  color: var(--color-dim);
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--border-strong);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }
 
 .total {
-  font-family: var(--font-display);
-  font-variation-settings: 'WONK' 1;
+  font-family: var(--font);
   font-weight: 900;
-  font-size: 2rem;
+  font-size: var(--text-2xl);
   line-height: 1;
-  color: var(--color-bone);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
 }
 
 .critical {
-  color: var(--color-verdigris);
+  color: var(--success);
 }
 
 .fumble {
-  color: #d98a92;
+  color: var(--accent);
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { DAMAGE_TYPE_LABEL } from '@/content/labels'
 import { formatModifier } from '@/domain/dice/dice'
 import type { RollMode } from '@/domain/dice/dice'
@@ -31,8 +32,8 @@ export function AttacksView() {
       lede="Tira aquí para ver el número. Lanzar un conjuro con espacio, con su coste y sus reglas, se hace en Conjuros."
     >
       <div className={styles.list}>
-        {attacks.map((attack) => (
-          <AttackRow key={attack.id} attack={attack} />
+        {attacks.map((attack, index) => (
+          <AttackRow key={attack.id} attack={attack} index={index} />
         ))}
       </div>
 
@@ -45,13 +46,16 @@ export function AttacksView() {
   )
 }
 
-function AttackRow({ attack }: { attack: AttackOption }) {
+function AttackRow({ attack, index }: { attack: AttackOption; index: number }) {
   const rollCheck = useCampaignStore((state) => state.rollCheck)
   const rollDamage = useCampaignStore((state) => state.rollDamage)
   const [result, setResult] = useState<AttackResult | null>(null)
+  // Bumped on every roll so the readout replays its landing animation.
+  const [rollSequence, setRollSequence] = useState(0)
 
   const attackWith = (mode: RollMode) => {
     const roll = rollCheck(`Ataque · ${attack.name}`, attack.attackBonus, mode)
+    setRollSequence((value) => value + 1)
     setResult({
       kind: 'attack',
       headline: roll.total,
@@ -67,7 +71,7 @@ function AttackRow({ attack }: { attack: AttackOption }) {
   const damageOptions = attack.damageBonus !== 0 ? { flatBonus: attack.damageBonus } : undefined
 
   return (
-    <article className={styles.attack}>
+    <article className={styles.attack} style={{ '--stagger-index': index } as CSSProperties}>
       <div className={styles.header}>
         <span className={styles.bonus}>{formatModifier(attack.attackBonus)}</span>
         <h3 className={styles.name}>
@@ -127,6 +131,7 @@ function AttackRow({ attack }: { attack: AttackOption }) {
           size="small"
           onClick={() => {
             const roll = rollDamage(`Daño · ${attack.name}`, attack.damage, damageOptions)
+            setRollSequence((value) => value + 1)
             setResult({
               kind: 'damage',
               headline: roll.total,
@@ -145,8 +150,10 @@ function AttackRow({ attack }: { attack: AttackOption }) {
       {result ? (
         <p className={styles.result}>
           <span
+            key={rollSequence}
             className={[
               styles.total,
+              'landing',
               result.outcome === 'critical' ? styles.critical : undefined,
               result.outcome === 'fumble' ? styles.fumble : undefined,
             ]
