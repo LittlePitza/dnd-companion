@@ -104,17 +104,12 @@ export function SheetView() {
               })}
             </div>
 
-            <div className={styles.passiveRow} style={{ marginTop: 'var(--space-4)' }}>
+            <h4 className={styles.subHeading}>Puntuaciones pasivas</h4>
+            <div className={styles.passiveRow}>
+              <PassiveScore label="Percepción" value={passiveSkillScore(character, 'perception')} />
+              <PassiveScore label="Perspicacia" value={passiveSkillScore(character, 'insight')} />
               <PassiveScore
-                label="Percepción pasiva"
-                value={passiveSkillScore(character, 'perception')}
-              />
-              <PassiveScore
-                label="Perspicacia pasiva"
-                value={passiveSkillScore(character, 'insight')}
-              />
-              <PassiveScore
-                label="Investigación pasiva"
+                label="Investigación"
                 value={passiveSkillScore(character, 'investigation')}
               />
             </div>
@@ -196,7 +191,7 @@ export function SheetView() {
       <Section heading="Resumen">
         <Grid density="narrow">
           <StatTile
-            label="Clase de armadura"
+            label="Armadura"
             value={stats.armorClass}
             hint={
               stats.armorClass !== stats.baseArmorClass ? `Base ${stats.baseArmorClass}` : undefined
@@ -204,7 +199,7 @@ export function SheetView() {
             accent={stats.armorClass !== stats.baseArmorClass ? 'surge' : 'none'}
           />
           <StatTile label="Iniciativa" value={formatModifier(stats.initiative)} />
-          <StatTile label="Velocidad" value={`${character.speed} pies`} />
+          <StatTile label="Velocidad" value={character.speed} unit="pies" />
           <StatTile label="Competencia" value={formatModifier(character.proficiencyBonus)} />
           <StatTile label="Concentración" value={formatModifier(stats.concentration)} />
           <StatTile

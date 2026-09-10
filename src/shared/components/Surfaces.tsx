@@ -71,18 +71,24 @@ const ACCENT_CLASS: Record<StatAccent, string | undefined> = {
 export function StatTile({
   label,
   value,
+  unit,
   hint,
   accent = 'none',
 }: {
   label: string
   value: ReactNode
+  /** Rendered small beside the number, e.g. `pies`, so the two never wrap apart. */
+  unit?: string
   hint?: ReactNode
   accent?: StatAccent
 }) {
   return (
     <div className={[styles.statTile, ACCENT_CLASS[accent]].filter(Boolean).join(' ')}>
       <p className={styles.statLabel}>{label}</p>
-      <p className={styles.statValue}>{value}</p>
+      <p className={styles.statValue}>
+        {value}
+        {unit ? <span className={styles.statUnit}>{unit}</span> : null}
+      </p>
       {hint ? <p className={styles.statHint}>{hint}</p> : null}
     </div>
   )

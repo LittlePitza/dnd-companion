@@ -2,6 +2,7 @@ import { useId, useMemo, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { MEMORY_CATEGORY_LABEL } from '@/content/labels'
 import { Button } from '@/shared/components/Button'
+import { Icon } from '@/shared/components/Icon'
 import { EmptyState, Section } from '@/shared/components/Surfaces'
 import type { Memory, MemoryCategory } from '@/store/useMemoriesStore'
 import {
@@ -70,6 +71,7 @@ export function MemoriesView() {
           size="small"
           onClick={() => setEditor(editor.mode === 'new' ? { mode: 'closed' } : { mode: 'new' })}
         >
+          <Icon name="plus" size={14} />
           Añadir recuerdo
         </Button>
 
@@ -78,6 +80,7 @@ export function MemoriesView() {
           disabled={memories.length === 0}
           onClick={() => downloadBackup(memories)}
         >
+          <Icon name="download" size={14} />
           Exportar respaldo
         </Button>
 
@@ -90,6 +93,7 @@ export function MemoriesView() {
           onChange={(event) => void handleFile(event)}
         />
         <label className={styles.fileLabel} htmlFor={importId}>
+          <Icon name="upload" size={14} />
           Importar respaldo
         </label>
       </div>

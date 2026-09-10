@@ -123,14 +123,22 @@
 }
 
 .statValue {
-  font-family: var(--font);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
   font-weight: 800;
   letter-spacing: var(--tracking-tight);
   font-size: var(--text-2xl);
   line-height: 1;
-  margin-top: var(--space-1);
   font-variant-numeric: tabular-nums;
   color: var(--text);
+}
+
+.statUnit {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-faint);
 }
 
 .statHint {

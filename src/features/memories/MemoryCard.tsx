@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import { MEMORY_CATEGORY_LABEL } from '@/content/labels'
 import { Button } from '@/shared/components/Button'
+import { Icon } from '@/shared/components/Icon'
 import type { Memory } from '@/store/useMemoriesStore'
 import { useMemoriesStore } from '@/store/useMemoriesStore'
 import styles from './Memories.module.css'
@@ -45,14 +46,16 @@ export function MemoryCard({ memory, onEdit }: { memory: Memory; onEdit: () => v
 
       <div className={styles.actions}>
         <Button size="small" aria-pressed={memory.pinned} onClick={() => togglePinned(memory.id)}>
+          <Icon name="pin" size={13} />
           Fijar
         </Button>
         <Button size="small" onClick={onEdit}>
+          <Icon name="edit" size={13} />
           Editar
         </Button>
         <Button
           size="small"
-          variant={isConfirmingDelete ? 'danger' : 'ghost'}
+          variant={isConfirmingDelete ? 'danger' : 'default'}
           // Kept as the same button across both states so the finger — and the
           // focus ring — stay where they were.
           onClick={() => {
@@ -60,10 +63,11 @@ export function MemoryCard({ memory, onEdit }: { memory: Memory; onEdit: () => v
             else setConfirmingDelete(true)
           }}
         >
+          <Icon name="trash" size={13} />
           {isConfirmingDelete ? '¿Seguro?' : 'Borrar'}
         </Button>
         {isConfirmingDelete ? (
-          <Button size="small" variant="ghost" onClick={() => setConfirmingDelete(false)}>
+          <Button size="small" onClick={() => setConfirmingDelete(false)}>
             Conservar
           </Button>
         ) : null}

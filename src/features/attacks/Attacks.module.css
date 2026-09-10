@@ -4,8 +4,6 @@
 }
 
 .attack {
-  position: relative;
-  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -21,23 +19,6 @@
 .attack:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-md);
-}
-
-/* A crimson spine marks the row as an attack. */
-.attack::before {
-  content: '';
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  width: 4px;
-  background: var(--accent);
-  transform: scaleY(0.4);
-  transform-origin: center;
-  transition: transform var(--dur-base) var(--ease-out);
-}
-
-.attack:hover::before {
-  transform: none;
 }
 
 .header {
@@ -100,6 +81,12 @@
   margin-inline-start: auto;
 }
 
+@media (max-width: 34rem) {
+  .tags {
+    margin-inline-start: calc(3rem + var(--space-4));
+  }
+}
+
 .tag {
   font-family: var(--font);
   font-size: var(--text-2xs);
@@ -127,13 +114,20 @@
 
 .meta {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-2);
   flex-wrap: wrap;
+  align-items: baseline;
   margin-top: var(--space-3);
   font-family: var(--font);
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-muted);
+}
+
+.meta > * + *::before {
+  content: '·';
+  color: var(--border-strong);
+  margin-inline-end: var(--space-2);
 }
 
 .notes {

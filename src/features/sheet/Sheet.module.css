@@ -406,3 +406,12 @@
   font-variant-numeric: tabular-nums;
   color: var(--gold);
 }
+
+.subHeading {
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: var(--space-4) 0 var(--space-2);
+}
