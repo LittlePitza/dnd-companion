@@ -75,28 +75,22 @@ Estas son las que más se olvidan en la mesa:
 
 ## Pensada para el teléfono
 
-<table>
-  <tr>
-    <td align="center">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/movil-combate-dark.png" />
-        <img src="docs/screenshots/movil-combate-light.png" alt="Combate en un teléfono" width="260" />
-      </picture>
-    </td>
-    <td align="center">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/movil-ataques-dark.png" />
-        <img src="docs/screenshots/movil-ataques-light.png" alt="Ataques en un teléfono, con botones de tirada normal, con ventaja y con desventaja" width="260" />
-      </picture>
-    </td>
-    <td valign="middle">
-      Se usa con una mano y durante horas, muchas veces con poca luz. Por eso trae tema oscuro
-      y claro (sigue al sistema y recuerda tu elección), botones grandes y navegación por
-      flechas entre pestañas.<br /><br />
-      Si el navegador no deja guardar datos, la app sigue funcionando en memoria y te avisa.
-    </td>
-  </tr>
-</table>
+Se usa con una mano y durante horas, muchas veces con poca luz. Por eso trae tema oscuro y
+claro (sigue al sistema y recuerda tu elección), botones grandes y navegación por flechas
+entre pestañas. Si el navegador no deja guardar datos, la app sigue funcionando en memoria y
+te avisa.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/movil-combate-dark.png" />
+    <img src="docs/screenshots/movil-combate-light.png" alt="Combate en un teléfono" width="300" />
+  </picture>
+  &nbsp;&nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/movil-ataques-dark.png" />
+    <img src="docs/screenshots/movil-ataques-light.png" alt="Ataques en un teléfono, con botones de tirada normal, con ventaja y con desventaja" width="300" />
+  </picture>
+</p>
 
 ## Tu propio personaje
 
