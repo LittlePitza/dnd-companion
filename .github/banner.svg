@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="Consola de Mesa. A table console for D&amp;D 2024.">
+  <!-- README banner drawn from src/styles/tokens.css: cool graphite ground, one crimson
+       accent, gold for resources. The type stack follows the font token (Plus Jakarta Sans). -->
+  <defs>
+    <radialGradient id="glow" cx="0.82" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#f04352" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#f04352" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="320" fill="#0b0d10"/>
+  <rect width="1280" height="320" fill="url(#glow)"/>
+  <rect x="0.5" y="0.5" width="1279" height="319" fill="none" stroke="#262b33"/>
+
+  <!-- Ghost die bleeding off the right edge -->
+  <g transform="translate(1210 190)" fill="none" stroke="#14171c" stroke-width="2" stroke-linejoin="round">
+    <path d="M0 -260 L225 -130 L225 130 L0 260 L-225 130 L-225 -130 Z"/>
+    <path d="M0 -140 L121 70 L-121 70 Z"/>
+  </g>
+
+  <!-- Chrome labels -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" letter-spacing="1.4" fill="#6a717c">
+    <text x="48" y="46">D&amp;D 2024 / TABLE CONSOLE</text>
+    <text x="48" y="276">REACT 19 · TYPESCRIPT STRICT · ZUSTAND · VITE · VITEST</text>
+    <text x="800" y="46">RULES ENGINE: ON</text>
+  </g>
+
+  <!-- Name -->
+  <rect x="48" y="86" width="5" height="96" rx="2.5" fill="#f04352"/>
+  <text x="72" y="152" font-family="'Plus Jakarta Sans', 'Segoe UI', Inter, system-ui, sans-serif" font-size="78" font-weight="800" letter-spacing="-2.6" fill="#e8eaed">Consola de Mesa</text>
+  <text x="74" y="196" font-family="'Plus Jakarta Sans', 'Segoe UI', Inter, system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="5" fill="#9aa1ac">A TABLE CONSOLE FOR D&amp;D 2024</text>
+  <text x="74" y="228" font-family="'Plus Jakarta Sans', 'Segoe UI', Inter, system-ui, sans-serif" font-size="14" font-weight="600" letter-spacing="3.5" fill="#e0a33e">THE CHARACTER SHEET THAT PLAYS ALONG</text>
+
+  <!-- Spell slot pips: 4 / 3 / 2, one already spent -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" letter-spacing="1.2" fill="#6a717c">
+    <text x="800" y="96">L1</text>
+    <text x="800" y="120">L2</text>
+    <text x="800" y="144">L3</text>
+  </g>
+  <g fill="#e0a33e">
+    <circle cx="834" cy="92" r="5"/><circle cx="852" cy="92" r="5"/><circle cx="870" cy="92" r="5"/>
+    <circle cx="834" cy="116" r="5"/><circle cx="852" cy="116" r="5"/>
+    <circle cx="834" cy="140" r="5"/>
+  </g>
+  <g fill="none" stroke="#e0a33e" stroke-opacity="0.55" stroke-width="1.5">
+    <circle cx="888" cy="92" r="4.5"/>
+    <circle cx="870" cy="116" r="4.5"/>
+    <circle cx="852" cy="140" r="4.5"/>
+  </g>
+
+  <!-- The die -->
+  <g transform="translate(1110 160)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M0 -112 L97 -56 L97 56 L0 112 L-97 56 L-97 -56 Z" fill="#14171c" stroke="#f04352" stroke-width="3"/>
+    <path d="M0 -60 L52 30 L-52 30 Z" fill="#1b1f26" stroke="#f04352" stroke-width="2" stroke-opacity="0.85"/>
+    <g fill="none" stroke="#f04352" stroke-width="1.6" stroke-opacity="0.55">
+      <path d="M0 -60 L-97 -56 M0 -60 L97 -56"/>
+      <path d="M52 30 L97 56 M52 30 L0 112"/>
+      <path d="M-52 30 L-97 56 M-52 30 L0 112"/>
+    </g>
+    <text x="0" y="19" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Segoe UI', Inter, system-ui, sans-serif" font-size="34" font-weight="800" letter-spacing="-1" fill="#e8eaed">20</text>
+  </g>
+
+  <!-- A rule violation, as the app reports it -->
+  <g transform="translate(800 182)">
+    <rect width="184" height="30" rx="6" fill="#f0576b" fill-opacity="0.14" stroke="#f0576b" stroke-opacity="0.4"/>
+    <text x="14" y="19.5" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" letter-spacing="0.8" fill="#f0576b">ONE_SLOT_PER_TURN</text>
+  </g>
+</svg>
