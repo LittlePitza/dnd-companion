@@ -1,8 +1,7 @@
 name: Deploy to GitHub Pages
 
-# Enable in Settings -> Pages -> Source: GitHub Actions.
-# Private repositories need a paid plan for Pages; until then this workflow
-# simply never runs, and nothing else in the project depends on it.
+# Publishes https://littlepitza.github.io/dnd-companion/ on every push to main.
+# Pages is set to Source: GitHub Actions in the repository settings.
 on:
   push:
     branches: [main]
